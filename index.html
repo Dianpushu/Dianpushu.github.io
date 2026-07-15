@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dianpushu | 組織公開首頁</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Inter:wght@300;400;600;700;800&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary: #0a0e14;
+      --bg-secondary: #121820;
+      --bg-card: rgba(22, 30, 41, 0.75);
+      --bg-card-hover: rgba(30, 42, 58, 0.9);
+      --border-color: rgba(54, 188, 247, 0.2);
+      --border-glow: rgba(54, 188, 247, 0.6);
+      --text-main: #e6f1ff;
+      --text-muted: #8892b0;
+      --accent-cyan: #36BCF7;
+      --accent-blue: #58A6FF;
+      --accent-purple: #8871e5;
+      --accent-pink: #ff69b4;
+      --accent-green: #3fb950;
+      --accent-yellow: #d29922;
+      --accent-red: #f85149;
+      --font-sans: 'Inter', 'Noto Sans TC', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'Fira Code', monospace;
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      line-height: 1.6;
+      overflow-x: hidden;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    /* Background Canvas */
+    #canvas-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.35;
+    }
+
+    /* Top Bar / Navbar */
+    .top-bar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(10, 14, 20, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-color);
+      padding: 0.8rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: var(--transition);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      font-weight: 800;
+      font-size: 1.3rem;
+      letter-spacing: -0.5px;
+      color: #fff;
+      text-decoration: none;
+    }
+
+    .brand-icon {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      color: #fff;
+      box-shadow: 0 0 15px rgba(54, 188, 247, 0.4);
+      transition: var(--transition);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 1.5rem;
+      align-items: center;
+    }
+
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.95rem;
+      font-weight: 500;
+      transition: var(--transition);
+    }
+
+    .nav-links a:hover {
+      color: var(--accent-cyan);
+    }
+
+    .status-pill {
+      padding: 0.35rem 0.8rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      background: rgba(54, 188, 247, 0.15);
+      color: var(--accent-cyan);
+      border: 1px solid var(--accent-cyan);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      background-color: var(--accent-cyan);
+      border-radius: 50%;
+      animation: pulse-dot 1.5s infinite;
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(1.3); }
+    }
+
+    /* Main Container */
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Hero Section */
+    .hero {
+      text-align: center;
+      padding: 3rem 1rem 2.5rem;
+      position: relative;
+    }
+
+    .hero-banner-title {
+      font-size: clamp(2.8rem, 7vw, 5rem);
+      font-weight: 900;
+      letter-spacing: -2px;
+      background: linear-gradient(to right, #ffffff, var(--accent-cyan), var(--accent-purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.5rem;
+      display: inline-block;
+      text-transform: uppercase;
+    }
+
+    .hero-subtitle {
+      font-size: 1.25rem;
+      color: var(--text-muted);
+      margin-bottom: 1.8rem;
+      font-family: var(--font-mono);
+    }
+
+    .typing-box {
+      display: inline-flex;
+      align-items: center;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      padding: 0.9rem 1.8rem;
+      border-radius: 12px;
+      font-family: var(--font-mono);
+      font-size: 1.1rem;
+      color: var(--accent-cyan);
+      margin-bottom: 2.5rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      min-height: 54px;
+    }
+
+    .cursor {
+      display: inline-block;
+      width: 8px;
+      height: 20px;
+      background-color: var(--accent-cyan);
+      margin-left: 6px;
+      animation: blink 1s infinite;
+    }
+
+    @keyframes blink {
+      0%, 49% { opacity: 1; }
+      50%, 100% { opacity: 0; }
+    }
+
+    /* Badges Bar */
+    .badges-bar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.7rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.45rem 0.9rem;
+      border-radius: 6px;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      font-weight: 600;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      transition: var(--transition);
+      cursor: default;
+    }
+
+    .badge:hover {
+      transform: translateY(-2px);
+      border-color: var(--border-glow);
+    }
+
+    .badge-label {
+      color: var(--text-muted);
+    }
+
+    .badge-value {
+      font-weight: 700;
+    }
+
+    .badge-blue .badge-value { color: var(--accent-cyan); }
+    .badge-purple .badge-value { color: var(--accent-purple); }
+    .badge-pink .badge-value { color: var(--accent-pink); }
+    .badge-red .badge-value { color: var(--accent-red); }
+
+    /* Notice Banner */
+    .notice-banner {
+      background: linear-gradient(90deg, rgba(54, 188, 247, 0.1), rgba(136, 113, 229, 0.15));
+      border: 1px solid var(--border-color);
+      border-left: 4px solid var(--accent-cyan);
+      border-radius: 10px;
+      padding: 1.3rem 1.6rem;
+      margin: 0 auto 3.5rem;
+      max-width: 850px;
+      text-align: left;
+      display: flex;
+      align-items: flex-start;
+      gap: 1.2rem;
+      backdrop-filter: blur(8px);
+    }
+
+    .notice-icon {
+      font-size: 1.8rem;
+      line-height: 1;
+    }
+
+    /* Interactive Terminal Section */
+    .terminal-section {
+      margin-bottom: 4.5rem;
+    }
+
+    .terminal-container {
+      background: #0d1117;
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    }
+
+    .terminal-header {
+      background: #161b22;
+      padding: 0.8rem 1.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .terminal-dots {
+      display: flex;
+      gap: 8px;
+    }
+
+    .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    .dot-red { background-color: #ff5f56; }
+    .dot-yellow { background-color: #ffbd2e; }
+    .dot-green { background-color: #27c93f; }
+
+    .terminal-title {
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .terminal-quick-actions {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .cmd-btn {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-main);
+      padding: 0.25rem 0.6rem;
+      border-radius: 4px;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .cmd-btn:hover {
+      background: var(--accent-cyan);
+      color: #000;
+      border-color: var(--accent-cyan);
+    }
+
+    .terminal-body {
+      padding: 1.5rem;
+      font-family: var(--font-mono);
+      font-size: 0.95rem;
+      max-height: 420px;
+      overflow-y: auto;
+      color: #c9d1d9;
+    }
+
+    .terminal-output {
+      margin-bottom: 1rem;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .cmd-line {
+      color: var(--accent-cyan);
+      font-weight: 700;
+      margin-top: 0.8rem;
+    }
+
+    .terminal-input-row {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin-top: 1rem;
+      padding-top: 0.8rem;
+      border-top: 1px dashed rgba(255, 255, 255, 0.1);
+    }
+
+    .prompt-label {
+      color: var(--accent-green);
+      font-weight: 700;
+      user-select: none;
+    }
+
+    #terminal-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: #fff;
+      font-family: var(--font-mono);
+      font-size: 0.95rem;
+      outline: none;
+    }
+
+    /* Section Headers */
+    .section-header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+
+    .section-title {
+      font-size: 2.2rem;
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+    }
+
+    .section-desc {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+    }
+
+    /* Progress & Roadmap Grid */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+      gap: 2rem;
+      margin-bottom: 4.5rem;
+    }
+
+    .card-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      backdrop-filter: blur(8px);
+      transition: var(--transition);
+    }
+
+    .card-box:hover {
+      border-color: var(--border-glow);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .card-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 0.8rem;
+      color: #fff;
+    }
+
+    /* Progress Bars */
+    .progress-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1.4rem;
+    }
+
+    .progress-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+
+    .progress-note {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 12px;
+      background: #161b22;
+      border-radius: 6px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: 6px;
+      transition: width 1s ease;
+    }
+
+    /* Flow Step (Roadmap) */
+    .flow-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1.1rem;
+    }
+
+    .flow-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      background: rgba(0, 0, 0, 0.25);
+      padding: 1.1rem;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      transition: var(--transition);
+    }
+
+    .flow-step:hover {
+      border-color: var(--border-glow);
+      transform: translateX(6px);
+    }
+
+    .step-icon {
+      font-size: 1.6rem;
+      flex-shrink: 0;
+    }
+
+    .step-text {
+      font-size: 0.95rem;
+    }
+
+    .step-title {
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 0.2rem;
+    }
+
+    .step-desc {
+      color: var(--text-muted);
+      font-size: 0.88rem;
+    }
+
+    /* FAQ Drawer */
+    .faq-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-bottom: 4.5rem;
+    }
+
+    details.faq-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      overflow: hidden;
+      transition: var(--transition);
+    }
+
+    details.faq-item[open] {
+      border-color: var(--border-glow);
+    }
+
+    summary.faq-question {
+      padding: 1.3rem 1.6rem;
+      font-weight: 700;
+      font-size: 1.08rem;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      list-style: none;
+      user-select: none;
+    }
+
+    summary.faq-question::-webkit-details-marker {
+      display: none;
+    }
+
+    summary.faq-question::after {
+      content: '+';
+      font-family: var(--font-mono);
+      font-size: 1.4rem;
+      color: var(--accent-cyan);
+      transition: var(--transition);
+    }
+
+    details[open] summary.faq-question::after {
+      content: '−';
+      transform: rotate(180deg);
+    }
+
+    .faq-answer {
+      padding: 0 1.6rem 1.3rem;
+      color: var(--text-muted);
+      font-size: 0.98rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      padding-top: 1.1rem;
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 3.5rem 1.5rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .footer-quote {
+      font-style: italic;
+      color: var(--text-main);
+      margin-bottom: 1.5rem;
+      max-width: 650px;
+      margin-left: auto;
+      margin-right: auto;
+      background: rgba(255, 255, 255, 0.03);
+      padding: 1.2rem;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .text-cyan { color: var(--accent-cyan); }
+    .text-purple { color: var(--accent-purple); }
+    .text-pink { color: var(--accent-pink); }
+    .text-green { color: var(--accent-green); }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .top-bar { padding: 0.8rem 1rem; }
+      .nav-links { display: none; }
+      .hero-banner-title { font-size: 2.5rem; }
+      .grid-2 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <canvas id="canvas-bg"></canvas>
+
+  <!-- Top Bar -->
+  <nav class="top-bar">
+    <a href="#" class="brand">
+      <div class="brand-icon">D</div>
+      <span>DIANPUSHU <small style="font-size:0.75rem; color:var(--text-muted); font-weight:400;">(組織公開首頁)</small></span>
+    </a>
+    <div class="nav-links">
+      <a href="#whoami">關於我們</a>
+      <a href="#terminal">互動終端機</a>
+      <a href="#progress">開發進度</a>
+      <a href="#roadmap">路線圖</a>
+      <a href="#faq">常見問題</a>
+    </div>
+    <div class="status-pill">
+      <span class="status-dot"></span>
+      <span>PUBLIC PORTAL</span>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="container">
+
+    <!-- Hero Section -->
+    <section class="hero" id="whoami">
+      <h1 class="hero-banner-title">DIANPUSHU</h1>
+      <p class="hero-subtitle">Est. 2026 · Something is brewing</p>
+      
+      <div class="typing-box">
+        <span id="typing-text"></span><span class="cursor"></span>
+      </div>
+
+      <!-- Badges Bar -->
+      <div class="badges-bar">
+        <div class="badge badge-blue">
+          <span class="badge-label">status</span>
+          <span class="badge-value">醞釀中</span>
+        </div>
+        <div class="badge badge-red">
+          <span class="badge-label">products</span>
+          <span class="badge-value">0 (inactive)</span>
+        </div>
+        <div class="badge badge-purple">
+          <span class="badge-label">ideas</span>
+          <span class="badge-value">∞ (無限大)</span>
+        </div>
+        <div class="badge badge-pink">
+          <span class="badge-label">vibes</span>
+          <span class="badge-value">讚 (Vibes Only)</span>
+        </div>
+        <div class="badge badge-blue" id="visitor-badge" style="cursor: pointer;" title="點擊為本頁增加熱度！">
+          <span class="badge-label">👁️ 路過人數</span>
+          <span class="badge-value" id="visitor-count">1,337</span>
+        </div>
+      </div>
+
+      <!-- Notice Banner -->
+      <div class="notice-banner">
+        <div class="notice-icon">🕵️</div>
+        <div>
+          <strong style="color: #fff; font-size: 1.15rem; display: block; margin-bottom: 0.3rem;">你發現了一個神秘組織。</strong>
+          <p style="color: var(--text-muted); font-size: 0.98rem; line-height: 1.5;">這裡目前什麼都沒有，但我們對此感到非常自豪。我們正在默默孵化最酷的想法與靈感，隨時準備驚豔世界。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Interactive Terminal Section -->
+    <section class="terminal-section" id="terminal">
+      <div class="section-header">
+        <h2 class="section-title">💻 組織終端模擬器 <span style="font-size:1rem; font-family:var(--font-mono); color:var(--accent-cyan);">$ dianpushu-cli</span></h2>
+        <p class="section-desc">直接在鍵盤輸入指令，或點擊上方按鈕進行探索</p>
+      </div>
+
+      <div class="terminal-container">
+        <div class="terminal-header">
+          <div class="terminal-dots">
+            <span class="dot dot-red"></span>
+            <span class="dot dot-yellow"></span>
+            <span class="dot dot-green"></span>
+          </div>
+          <div class="terminal-title">bash - guest@dianpushu-public:~</div>
+          <div class="terminal-quick-actions">
+            <button class="cmd-btn" onclick="runCommand('whoami')">whoami</button>
+            <button class="cmd-btn" onclick="runCommand('ls -l ./products')">ls ./products</button>
+            <button class="cmd-btn" onclick="runCommand('git log --oneline')">git log</button>
+            <button class="cmd-btn" onclick="runCommand('status')">status</button>
+            <button class="cmd-btn" onclick="runCommand('roadmap')">roadmap</button>
+            <button class="cmd-btn" onclick="runCommand('clear')">clear</button>
+          </div>
+        </div>
+
+        <div class="terminal-body" id="terminal-body">
+          <div class="terminal-output">歡迎來到 Dianpushu 組織公開終端系統 v2026.07.
+輸入 <span class="text-cyan">help</span> 查看可用指令清單，或點擊快捷鍵。
+------------------------------------------------------------------</div>
+          <div id="terminal-history"></div>
+          <div class="terminal-input-row">
+            <span class="prompt-label">guest@dianpushu:~$</span>
+            <input type="text" id="terminal-input" placeholder="輸入指令 (例如: whoami, status, git log)..." autocomplete="off" spellcheck="false" />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Progress & Roadmap Grid -->
+    <section id="progress">
+      <div class="grid-2">
+        <!-- Progress Box -->
+        <div class="card-box">
+          <h3 class="card-title">📈 開發進度報告</h3>
+          <div class="progress-list">
+            <div class="progress-item">
+              <div class="progress-header">
+                <span style="color:#fff;">1. 取組織名字</span>
+                <span class="text-cyan">100%</span>
+              </div>
+              <div class="progress-track">
+                <div class="progress-fill" style="width: 100%; background: var(--accent-cyan);"></div>
+              </div>
+              <div class="progress-note">← 吵了三天的傑出成果</div>
+            </div>
+
+            <div class="progress-item">
+              <div class="progress-header">
+                <span style="color:#fff;">2. 設計 Logo</span>
+                <span class="text-purple">30%</span>
+              </div>
+              <div class="progress-track">
+                <div class="progress-fill" style="width: 30%; background: var(--accent-purple);"></div>
+              </div>
+              <div class="progress-note">← 有人畫了一個圓</div>
+            </div>
+
+            <div class="progress-item">
+              <div class="progress-header">
+                <span style="color:#fff;">3. 寫程式碼 (Coding)</span>
+                <span class="text-pink">0%</span>
+              </div>
+              <div class="progress-track">
+                <div class="progress-fill" style="width: 0%; background: var(--accent-pink);"></div>
+              </div>
+              <div class="progress-note">← 快了快了，馬上開始</div>
+            </div>
+
+            <div class="progress-item">
+              <div class="progress-header">
+                <span style="color:#fff;">4. 統治世界</span>
+                <span style="color:var(--text-muted);">0%</span>
+              </div>
+              <div class="progress-track">
+                <div class="progress-fill" style="width: 0%; background: var(--text-muted);"></div>
+              </div>
+              <div class="progress-note">← 已排入 backlog 待辦事項</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Roadmap Box -->
+        <div class="card-box" id="roadmap">
+          <h3 class="card-title">🗺️ 組織 Roadmap 循環</h3>
+          <div class="flow-list">
+            <div class="flow-step">
+              <div class="step-icon">💡</div>
+              <div class="step-text">
+                <div class="step-title">步驟一：有個超讚的點子</div>
+                <div class="step-desc">群組裡突然出現驚天動地的產品構想。</div>
+              </div>
+            </div>
+            <div class="flow-step">
+              <div class="step-icon">📦</div>
+              <div class="step-text">
+                <div class="step-title">步驟二：開一個新 Repo</div>
+                <div class="step-desc">二話不說立即 git init，先開 repository 氣勢不能輸。</div>
+              </div>
+            </div>
+            <div class="flow-step">
+              <div class="step-icon">🎨</div>
+              <div class="step-text">
+                <div class="step-title">步驟三：幫 Repo 取名字</div>
+                <div class="step-desc">全體熱烈討論三天三夜，只為了決定完美的名字。</div>
+              </div>
+            </div>
+            <div class="flow-step">
+              <div class="step-icon">😴</div>
+              <div class="step-text">
+                <div class="step-title">步驟四：擱置三個月</div>
+                <div class="step-desc">名字取好後全體心滿意足地放空，之後無限迴圈回步驟一。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="terminal-section" id="faq">
+      <div class="section-header">
+        <h2 class="section-title">❓ 你可能想問 (FAQ)</h2>
+        <p class="section-desc">關於 Dianpushu 組織的百問百答</p>
+      </div>
+
+      <div class="faq-container">
+        <details class="faq-item">
+          <summary class="faq-question">你們這個組織到底在做什麼？</summary>
+          <div class="faq-answer">好問題。其實我們自己也很想知道。目前我們正專注於把極具潛力的創意無限期保存在構想階段。</div>
+        </details>
+        <details class="faq-item">
+          <summary class="faq-question">什麼時候會有第一個正式發布的產品專案？</summary>
+          <div class="faq-answer">Soon™ (此商標不構成任何具體時程承諾，請依實際釋出狀況為準)。</div>
+        </details>
+        <details class="faq-item">
+          <summary class="faq-question">可以申請加入你們嗎？</summary>
+          <div class="faq-answer">我們完全感受得到你的誠意與熱情！等我們想起來我們要幹嘛、並且寫好專案架構之後，就隨時輪到你了。</div>
+        </details>
+        <details class="faq-item">
+          <summary class="faq-question">這個頁面是認真的嗎？</summary>
+          <div class="faq-answer">我們對於「不認真」及「幽默感」這兩件事，抱持著絕對 100% 認真且專業的態度。</div>
+        </details>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-quote" id="dev-quote">
+      "Programming is the art of telling another human what one wants the computer to do." — Donald Knuth
+    </div>
+    <div style="margin-bottom: 1.2rem; font-size: 1.05rem;">
+      🏆 <strong>本月最佳員工</strong>：<span class="text-cyan">這個位置還空著（虛位以待）</span>
+    </div>
+    <p>© 2026 Dianpushu · 本組織由 100% 再生拖延症製成 · 無任何產品在本頁製作過程中受到傷害</p>
+    <p style="margin-top:0.5rem; font-size:0.82rem; color: #525d70;">Powered by GitHub Pages</p>
+  </footer>
+
+  <script>
+    /* =========================================================
+       DYNAMIC BACKGROUND CANVAS PARTICLES
+    ========================================================= */
+    const canvas = document.getElementById('canvas-bg');
+    const ctx = canvas.getContext('2d');
+    let width = canvas.width = window.innerWidth;
+    let height = canvas.height = window.innerHeight;
+    let particles = [];
+
+    window.addEventListener('resize', () => {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+      initParticles();
+    });
+
+    class Particle {
+      constructor() {
+        this.reset();
+      }
+      reset() {
+        this.x = Math.random() * width;
+        this.y = Math.random() * height;
+        this.size = Math.random() * 2 + 1;
+        this.speedX = (Math.random() - 0.5) * 0.5;
+        this.speedY = (Math.random() - 0.5) * 0.5;
+        this.alpha = Math.random() * 0.5 + 0.2;
+      }
+      update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+        if (this.x < 0 || this.x > width || this.y < 0 || this.y > height) {
+          this.reset();
+        }
+      }
+      draw() {
+        ctx.fillStyle = `rgba(54, 188, 247, ${this.alpha})`;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    function initParticles() {
+      particles = [];
+      const count = Math.min(Math.floor((width * height) / 13000), 75);
+      for (let i = 0; i < count; i++) {
+        particles.push(new Particle());
+      }
+    }
+
+    function animateParticles() {
+      ctx.clearRect(0, 0, width, height);
+      
+      for (let i = 0; i < particles.length; i++) {
+        particles[i].update();
+        particles[i].draw();
+        for (let j = i + 1; j < particles.length; j++) {
+          const dx = particles[i].x - particles[j].x;
+          const dy = particles[i].y - particles[j].y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 120) {
+            ctx.strokeStyle = `rgba(54, 188, 247, ${0.12 * (1 - dist/120)})`;
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.stroke();
+          }
+        }
+      }
+      requestAnimationFrame(animateParticles);
+    }
+    initParticles();
+    animateParticles();
+
+    /* =========================================================
+       TYPING EFFECT IN HERO SECTION
+    ========================================================= */
+    const typingTexts = [
+      "Nothing to see here... yet (or is there?)",
+      "Powered by friendship, caffeine & 100% procrastination.",
+      "Shipping great products since... TBD.",
+      "404: Introduction not found... but vibes are 200 OK!"
+    ];
+
+    let textIdx = 0;
+    let charIdx = 0;
+    let isDeleting = false;
+    const typingEl = document.getElementById('typing-text');
+
+    function typeLoop() {
+      const fullText = typingTexts[textIdx % typingTexts.length];
+
+      if (isDeleting) {
+        typingEl.textContent = fullText.substring(0, charIdx - 1);
+        charIdx--;
+      } else {
+        typingEl.textContent = fullText.substring(0, charIdx + 1);
+        charIdx++;
+      }
+
+      let typeSpeed = isDeleting ? 35 : 70;
+
+      if (!isDeleting && charIdx === fullText.length) {
+        typeSpeed = 2200;
+        isDeleting = true;
+      } else if (isDeleting && charIdx === 0) {
+        isDeleting = false;
+        textIdx++;
+        typeSpeed = 400;
+      }
+
+      setTimeout(typeLoop, typeSpeed);
+    }
+    typeLoop();
+
+    /* =========================================================
+       INTERACTIVE TERMINAL SYSTEM
+    ========================================================= */
+    const terminalInput = document.getElementById('terminal-input');
+    const terminalHistory = document.getElementById('terminal-history');
+    const terminalBody = document.getElementById('terminal-body');
+
+    function appendTerminalOutput(text, isCmd = false) {
+      const div = document.createElement('div');
+      if (isCmd) {
+        div.className = 'cmd-line';
+        div.textContent = `guest@dianpushu:~$ ${text}`;
+      } else {
+        div.className = 'terminal-output';
+        div.innerHTML = text;
+      }
+      terminalHistory.appendChild(div);
+      terminalBody.scrollTop = terminalBody.scrollHeight;
+    }
+
+    function runCommand(cmdStr) {
+      const raw = cmdStr.trim();
+      const cmd = raw.toLowerCase();
+      appendTerminalOutput(raw, true);
+
+      if (cmd === 'help') {
+        appendTerminalOutput(`可用指令清單 (Dianpushu CLI v1.0):
+  <span class="text-cyan">whoami</span>          - 查詢我們是誰與組織宗旨
+  <span class="text-cyan">ls ./products</span>   - 檢查組織目前有哪些公開產品
+  <span class="text-cyan">git log</span>         - 查看組織最近的開發或裝潢紀錄
+  <span class="text-cyan">status</span>          - 顯示目前各項任務的真實進度表
+  <span class="text-cyan">roadmap</span>         - 顯示組織的 Roadmap 循環步驟
+  <span class="text-cyan">clear</span>           - 清空終端機畫面`);
+      } else if (cmd === 'whoami') {
+        appendTerminalOutput(`一群朋友。具體要幹嘛還在想。
+表面上看是在認真醞釀大招，實際上也是在認真醞釀大招。`);
+      } else if (cmd === 'ls ./products' || cmd === 'ls -l ./products' || cmd === 'ls products') {
+        appendTerminalOutput(`ls: cannot access './products': No such file or directory
+<span class="text-purple">提示：產品仍在醞釀階段，敬請期待未來發布！</span>`);
+      } else if (cmd === 'ls ./secrets' || cmd === 'cd private' || cmd === 'ls -a') {
+        appendTerminalOutput(`<span class="text-pink">[Access Denied] 隱私保護警告：內部機密與專案庫（Private Repo）僅限組織正式授權成員存取！</span>`);
+      } else if (cmd === 'git log' || cmd.startsWith('git log')) {
+        appendTerminalOutput(`<span class="text-cyan">ea85b1b</span> (HEAD -> main) feat: 打造組織公開互動首頁
+<span class="text-cyan">a1b2c3d</span> init: 先開個組織，氣勢絕不能輸`);
+      } else if (cmd === 'status') {
+        appendTerminalOutput(`Dianpushu 開發進度報告：
+------------------------------------------------------------
+取組織名字     ▓▓▓▓▓▓▓▓▓▓ 100%   ← 吵了三天的傑作
+設計 Logo      ▓▓▓░░░░░░░  30%   ← 有人畫了一個圓
+寫程式碼       ░░░░░░░░░░   0%   ← 快了快了，馬上開始
+統治世界       ░░░░░░░░░░   0%   ← 已排入下季度 Backlog`);
+      } else if (cmd === 'roadmap') {
+        appendTerminalOutput(`Roadmap 循環步驟：
+1. 💡 有個超讚的點子
+2. 📦 開一個新 Repo (git init)
+3. 🎨 幫 Repo 取名字 (討論三天三夜)
+4. 😴 擱置三個月 (無限迴圈回到步驟 1)`);
+      } else if (cmd === 'clear' || cmd === 'cls') {
+        terminalHistory.innerHTML = '';
+      } else if (cmd === '') {
+        // do nothing
+      } else {
+        appendTerminalOutput(`找不到指令: '${raw}'。請嘗試輸入 <span class="text-cyan">help</span> 獲取可用指令。`);
+      }
+      terminalInput.value = '';
+    }
+
+    terminalInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        runCommand(terminalInput.value);
+      }
+    });
+
+    /* =========================================================
+       VISITOR COUNTER BOOSTER
+    ========================================================= */
+    let countVal = 1337;
+    const countEl = document.getElementById('visitor-count');
+    const badgeEl = document.getElementById('visitor-badge');
+
+    badgeEl.addEventListener('click', () => {
+      countVal++;
+      countEl.textContent = countVal.toLocaleString();
+      badgeEl.style.transform = 'scale(1.15)';
+      setTimeout(() => { badgeEl.style.transform = ''; }, 200);
+    });
+
+    /* Random Developer Quotes in Footer */
+    const quotes = [
+      '"First, solve the problem. Then, write the code." — John Johnson',
+      '"Simplicity is the soul of efficiency." — Austin Freeman',
+      '"Make it work, make it right, make it fast." — Kent Beck',
+      '"Code is like humor. When you have to explain it, it’s bad." — Cory House'
+    ];
+    setInterval(() => {
+      const q = quotes[Math.floor(Math.random() * quotes.length)];
+      document.getElementById('dev-quote').textContent = q;
+    }, 8000);
+  </script>
+</body>
+</html>
