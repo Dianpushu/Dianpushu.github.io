@@ -3,1077 +3,1541 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dianpushu | 組織公開首頁</title>
+  <meta name="description" content="Dianpushu 組織公開首頁 — Something is brewing.">
+  <meta name="theme-color" content="#05070d">
+  <title>DIANPUSHU — Something is Brewing</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Inter:wght@300;400;600;700;800&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
   <style>
+    /* ============================================================
+       DESIGN TOKENS
+    ============================================================ */
     :root {
-      --bg-primary: #0a0e14;
-      --bg-secondary: #121820;
-      --bg-card: rgba(22, 30, 41, 0.75);
-      --bg-card-hover: rgba(30, 42, 58, 0.9);
-      --border-color: rgba(54, 188, 247, 0.2);
-      --border-glow: rgba(54, 188, 247, 0.6);
-      --text-main: #e6f1ff;
-      --text-muted: #8892b0;
-      --accent-cyan: #36BCF7;
-      --accent-blue: #58A6FF;
-      --accent-purple: #8871e5;
-      --accent-pink: #ff69b4;
-      --accent-green: #3fb950;
-      --accent-yellow: #d29922;
-      --accent-red: #f85149;
-      --font-sans: 'Inter', 'Noto Sans TC', -apple-system, BlinkMacSystemFont, sans-serif;
-      --font-mono: 'Fira Code', monospace;
-      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      --bg-0: #04060c;
+      --bg-1: #090e1a;
+      --bg-2: #0d1424;
+      --card: rgba(15, 22, 38, 0.55);
+      --card-solid: #0d1424;
+      --line: rgba(125, 180, 255, 0.13);
+      --line-strong: rgba(125, 180, 255, 0.35);
+      --text: #e8f0ff;
+      --text-dim: #8b97b8;
+      --text-faint: #5a6785;
+      --cyan: #38bdf8;
+      --indigo: #818cf8;
+      --violet: #c084fc;
+      --pink: #f472b6;
+      --green: #34d399;
+      --amber: #fbbf24;
+      --red: #f87171;
+      --grad: linear-gradient(120deg, #38bdf8 0%, #818cf8 45%, #c084fc 80%, #f472b6 110%);
+      --sans: 'Noto Sans TC', 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+      --display: 'Space Grotesk', 'Noto Sans TC', sans-serif;
+      --mono: 'Fira Code', 'Noto Sans TC', monospace;
+      --ease: cubic-bezier(0.22, 1, 0.36, 1);
+      --radius: 18px;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    ::selection { background: rgba(129, 140, 248, 0.45); color: #fff; }
+
+    html { scroll-behavior: smooth; }
 
     body {
-      background-color: var(--bg-primary);
-      color: var(--text-main);
-      font-family: var(--font-sans);
-      line-height: 1.6;
+      background: var(--bg-0);
+      color: var(--text);
+      font-family: var(--sans);
+      line-height: 1.7;
       overflow-x: hidden;
       min-height: 100vh;
+    }
+
+    /* Custom scrollbar */
+    ::-webkit-scrollbar { width: 10px; height: 10px; }
+    ::-webkit-scrollbar-track { background: var(--bg-0); }
+    ::-webkit-scrollbar-thumb {
+      background: linear-gradient(180deg, #1e2c4a, #16203a);
+      border-radius: 8px;
+      border: 2px solid var(--bg-0);
+    }
+    ::-webkit-scrollbar-thumb:hover { background: #2a3b60; }
+
+    /* ============================================================
+       BOOT PRELOADER
+    ============================================================ */
+    #boot {
+      position: fixed; inset: 0; z-index: 9999;
+      background: var(--bg-0);
+      display: flex; align-items: center; justify-content: center;
+      transition: opacity 0.6s ease, visibility 0.6s;
+    }
+    #boot.done { opacity: 0; visibility: hidden; pointer-events: none; }
+    .boot-inner {
+      font-family: var(--mono);
+      font-size: clamp(0.72rem, 2.4vw, 0.92rem);
+      color: var(--text-dim);
+      width: min(560px, 88vw);
+    }
+    .boot-line { opacity: 0; transform: translateY(4px); animation: boot-in 0.25s forwards; white-space: pre-wrap; }
+    .boot-line .ok { color: var(--green); font-weight: 700; }
+    .boot-line .warn { color: var(--amber); font-weight: 700; }
+    .boot-line .max { color: var(--cyan); font-weight: 700; }
+    @keyframes boot-in { to { opacity: 1; transform: none; } }
+    .boot-bar {
+      margin-top: 1rem; height: 3px; border-radius: 3px;
+      background: rgba(255,255,255,0.07); overflow: hidden;
+    }
+    .boot-bar i {
+      display: block; height: 100%; width: 0%;
+      background: var(--grad);
+      animation: boot-fill 1.5s var(--ease) forwards;
+    }
+    @keyframes boot-fill { to { width: 100%; } }
+
+    /* ============================================================
+       BACKGROUND LAYERS
+    ============================================================ */
+    #stars {
+      position: fixed; inset: 0; z-index: 0;
+      width: 100vw; height: 100vh; pointer-events: none;
+    }
+    .aurora {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      overflow: hidden;
+    }
+    .aurora span {
+      position: absolute; border-radius: 50%;
+      filter: blur(90px); opacity: 0.32;
+      animation: drift 26s ease-in-out infinite alternate;
+    }
+    .aurora .a1 { width: 55vw; height: 55vw; top: -22vw; left: -12vw; background: radial-gradient(circle, #0ea5e9, transparent 65%); }
+    .aurora .a2 { width: 44vw; height: 44vw; top: 8vw; right: -16vw; background: radial-gradient(circle, #7c3aed, transparent 65%); animation-delay: -8s; }
+    .aurora .a3 { width: 40vw; height: 40vw; bottom: -18vw; left: 22vw; background: radial-gradient(circle, #db2777, transparent 68%); opacity: 0.16; animation-delay: -16s; }
+    @keyframes drift {
+      from { transform: translate3d(0, 0, 0) scale(1); }
+      to   { transform: translate3d(4vw, 3vw, 0) scale(1.12); }
+    }
+    .grid-overlay {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background-image:
+        linear-gradient(rgba(125,180,255,0.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(125,180,255,0.045) 1px, transparent 1px);
+      background-size: 56px 56px;
+      mask-image: radial-gradient(ellipse 90% 60% at 50% 0%, #000 30%, transparent 75%);
+      -webkit-mask-image: radial-gradient(ellipse 90% 60% at 50% 0%, #000 30%, transparent 75%);
+    }
+    .noise {
+      position: fixed; inset: 0; z-index: 1; pointer-events: none; opacity: 0.5;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+    }
+    #matrix {
+      position: fixed; inset: 0; z-index: 9000; pointer-events: none;
+      opacity: 0; transition: opacity 0.5s;
+    }
+    #matrix.on { opacity: 1; }
+
+    /* ============================================================
+       SCROLL PROGRESS + NAV
+    ============================================================ */
+    #scroll-progress {
+      position: fixed; top: 0; left: 0; height: 2px; width: 0%;
+      background: var(--grad); z-index: 300;
+      box-shadow: 0 0 12px rgba(129, 140, 248, 0.8);
+    }
+    .top-bar {
+      position: sticky; top: 0; z-index: 200;
+      background: rgba(4, 6, 12, 0.7);
+      backdrop-filter: blur(16px) saturate(1.4);
+      -webkit-backdrop-filter: blur(16px) saturate(1.4);
+      border-bottom: 1px solid var(--line);
+      padding: 0.8rem 2rem;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .brand {
+      display: flex; align-items: center; gap: 0.75rem;
+      font-family: var(--display); font-weight: 700; font-size: 1.15rem;
+      letter-spacing: 0.04em; color: #fff; text-decoration: none;
+    }
+    .brand-icon {
+      width: 38px; height: 38px; border-radius: 11px;
+      display: grid; place-items: center;
+      font-family: var(--mono); font-weight: 700; font-size: 1.05rem; color: #fff;
+      background: var(--grad);
+      background-size: 200% 200%;
+      animation: grad-shift 6s ease infinite;
+      box-shadow: 0 0 22px rgba(129, 140, 248, 0.45);
+    }
+    @keyframes grad-shift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+    .nav-links { display: flex; gap: 1.6rem; align-items: center; }
+    .nav-links a {
+      color: var(--text-dim); text-decoration: none;
+      font-size: 0.9rem; font-weight: 500;
+      transition: color 0.25s;
       position: relative;
     }
-
-    /* Background Canvas */
-    #canvas-bg {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      z-index: 0;
-      pointer-events: none;
-      opacity: 0.35;
+    .nav-links a::after {
+      content: ''; position: absolute; left: 0; bottom: -5px;
+      width: 100%; height: 1.5px; background: var(--grad);
+      transform: scaleX(0); transform-origin: left;
+      transition: transform 0.3s var(--ease);
     }
-
-    /* Top Bar / Navbar */
-    .top-bar {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      background: rgba(10, 14, 20, 0.85);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border-color);
-      padding: 0.8rem 2rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      transition: var(--transition);
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 0.8rem;
-      font-weight: 800;
-      font-size: 1.3rem;
-      letter-spacing: -0.5px;
-      color: #fff;
-      text-decoration: none;
-    }
-
-    .brand-icon {
-      width: 36px;
-      height: 36px;
-      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: var(--font-mono);
-      font-weight: 700;
-      color: #fff;
-      box-shadow: 0 0 15px rgba(54, 188, 247, 0.4);
-      transition: var(--transition);
-    }
-
-    .nav-links {
-      display: flex;
-      gap: 1.5rem;
-      align-items: center;
-    }
-
-    .nav-links a {
-      color: var(--text-muted);
-      text-decoration: none;
-      font-size: 0.95rem;
-      font-weight: 500;
-      transition: var(--transition);
-    }
-
-    .nav-links a:hover {
-      color: var(--accent-cyan);
-    }
-
+    .nav-links a:hover { color: #fff; }
+    .nav-links a:hover::after { transform: scaleX(1); }
     .status-pill {
-      padding: 0.35rem 0.8rem;
-      border-radius: 999px;
-      font-size: 0.75rem;
-      font-family: var(--font-mono);
-      font-weight: 700;
-      background: rgba(54, 188, 247, 0.15);
-      color: var(--accent-cyan);
-      border: 1px solid var(--accent-cyan);
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
+      padding: 0.35rem 0.9rem; border-radius: 999px;
+      font-size: 0.72rem; font-family: var(--mono); font-weight: 700;
+      letter-spacing: 0.08em;
+      background: rgba(52, 211, 153, 0.1); color: var(--green);
+      border: 1px solid rgba(52, 211, 153, 0.35);
+      display: flex; align-items: center; gap: 0.45rem;
     }
-
     .status-dot {
-      width: 8px;
-      height: 8px;
-      background-color: var(--accent-cyan);
-      border-radius: 50%;
-      animation: pulse-dot 1.5s infinite;
+      width: 7px; height: 7px; background: var(--green); border-radius: 50%;
+      box-shadow: 0 0 8px var(--green);
+      animation: pulse-dot 1.8s infinite;
     }
-
     @keyframes pulse-dot {
       0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.4; transform: scale(1.3); }
+      50% { opacity: 0.4; transform: scale(1.35); }
     }
 
-    /* Main Container */
+    /* ============================================================
+       LAYOUT
+    ============================================================ */
     .container {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 2rem 1.5rem;
-      position: relative;
-      z-index: 1;
+      max-width: 1160px; margin: 0 auto;
+      padding: 0 1.5rem;
+      position: relative; z-index: 2;
     }
+    section { position: relative; }
 
-    /* Hero Section */
+    .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.8s var(--ease), transform 0.8s var(--ease); }
+    .reveal.in { opacity: 1; transform: none; }
+
+    /* ============================================================
+       HERO
+    ============================================================ */
     .hero {
       text-align: center;
-      padding: 3rem 1rem 2.5rem;
+      padding: 6.5rem 1rem 4rem;
+    }
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 0.6rem;
+      font-family: var(--mono); font-size: 0.78rem; font-weight: 600;
+      letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--cyan);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      background: rgba(56, 189, 248, 0.07);
+      padding: 0.45rem 1.1rem; border-radius: 999px;
+      margin-bottom: 2rem;
+    }
+    .hero-eyebrow::before {
+      content: ''; width: 6px; height: 6px; border-radius: 50%;
+      background: var(--cyan); box-shadow: 0 0 10px var(--cyan);
+      animation: pulse-dot 1.8s infinite;
+    }
+    .hero-title {
+      font-family: var(--display);
+      font-size: clamp(3.2rem, 11vw, 7.5rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.02;
       position: relative;
-    }
-
-    .hero-banner-title {
-      font-size: clamp(2.8rem, 7vw, 5rem);
-      font-weight: 900;
-      letter-spacing: -2px;
-      background: linear-gradient(to right, #ffffff, var(--accent-cyan), var(--accent-purple));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      margin-bottom: 0.5rem;
       display: inline-block;
-      text-transform: uppercase;
+      background: var(--grad);
+      background-size: 220% 220%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: grad-shift 7s ease infinite;
+      margin-bottom: 0.6rem;
     }
-
-    .hero-subtitle {
-      font-size: 1.25rem;
-      color: var(--text-muted);
-      margin-bottom: 1.8rem;
-      font-family: var(--font-mono);
+    /* glitch slices */
+    .hero-title::before, .hero-title::after {
+      content: attr(data-text);
+      position: absolute; inset: 0;
+      -webkit-text-fill-color: initial;
+      background: none;
+      opacity: 0;
+      pointer-events: none;
     }
+    .hero-title::before { color: var(--cyan); animation: glitch-a 7s infinite steps(1); }
+    .hero-title::after  { color: var(--pink); animation: glitch-b 7s infinite steps(1); }
+    @keyframes glitch-a {
+      0%, 92%, 100% { opacity: 0; transform: none; clip-path: inset(0 0 0 0); }
+      93% { opacity: 0.75; transform: translate(-5px, 2px); clip-path: inset(12% 0 60% 0); }
+      94.5% { opacity: 0.75; transform: translate(4px, -2px); clip-path: inset(58% 0 8% 0); }
+      96% { opacity: 0; }
+    }
+    @keyframes glitch-b {
+      0%, 92.5%, 100% { opacity: 0; transform: none; clip-path: inset(0 0 0 0); }
+      93.5% { opacity: 0.75; transform: translate(5px, -2px); clip-path: inset(64% 0 4% 0); }
+      95% { opacity: 0.75; transform: translate(-4px, 2px); clip-path: inset(6% 0 70% 0); }
+      96.5% { opacity: 0; }
+    }
+    .hero-sub {
+      font-family: var(--mono);
+      font-size: clamp(0.85rem, 2.4vw, 1.05rem);
+      color: var(--text-dim);
+      letter-spacing: 0.12em;
+      margin-bottom: 2.2rem;
+    }
+    .hero-sub b { color: var(--text); font-weight: 600; }
 
     .typing-box {
-      display: inline-flex;
-      align-items: center;
-      background: var(--bg-secondary);
-      border: 1px solid var(--border-color);
-      padding: 0.9rem 1.8rem;
-      border-radius: 12px;
-      font-family: var(--font-mono);
-      font-size: 1.1rem;
-      color: var(--accent-cyan);
-      margin-bottom: 2.5rem;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-      min-height: 54px;
+      display: inline-flex; align-items: center;
+      background: rgba(9, 14, 26, 0.8);
+      border: 1px solid var(--line);
+      padding: 0.85rem 1.6rem; border-radius: 12px;
+      font-family: var(--mono);
+      font-size: clamp(0.85rem, 2.6vw, 1.05rem);
+      color: var(--cyan);
+      margin-bottom: 2.4rem;
+      box-shadow: 0 18px 45px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255,255,255,0.04);
+      min-height: 52px;
+      max-width: 92vw;
     }
-
+    .typing-box .prompt-sign { color: var(--green); margin-right: 0.6rem; user-select: none; }
     .cursor {
-      display: inline-block;
-      width: 8px;
-      height: 20px;
-      background-color: var(--accent-cyan);
-      margin-left: 6px;
-      animation: blink 1s infinite;
+      display: inline-block; width: 9px; height: 1.15em;
+      background: var(--cyan); margin-left: 5px;
+      vertical-align: text-bottom;
+      animation: blink 1.05s steps(1) infinite;
+      box-shadow: 0 0 8px rgba(56,189,248,0.8);
     }
+    @keyframes blink { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
 
-    @keyframes blink {
-      0%, 49% { opacity: 1; }
-      50%, 100% { opacity: 0; }
+    .hero-cta { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-bottom: 3rem; }
+    .btn {
+      position: relative;
+      display: inline-flex; align-items: center; gap: 0.55rem;
+      padding: 0.8rem 1.7rem; border-radius: 12px;
+      font-family: var(--sans); font-weight: 700; font-size: 0.95rem;
+      text-decoration: none; cursor: pointer; border: none;
+      transition: transform 0.25s var(--ease), box-shadow 0.25s var(--ease);
     }
-
-    /* Badges Bar */
-    .badges-bar {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 0.7rem;
-      margin-bottom: 2.5rem;
+    .btn:active { transform: scale(0.97); }
+    .btn-primary {
+      color: #04060c;
+      background: var(--grad);
+      background-size: 200% 200%;
+      animation: grad-shift 6s ease infinite;
+      box-shadow: 0 8px 30px rgba(129, 140, 248, 0.4);
     }
+    .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 14px 40px rgba(129, 140, 248, 0.55); }
+    .btn-ghost {
+      color: var(--text);
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--line-strong);
+    }
+    .btn-ghost:hover { transform: translateY(-3px); background: rgba(255,255,255,0.08); }
 
+    .badges-bar { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.7rem; }
     .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-      padding: 0.45rem 0.9rem;
-      border-radius: 6px;
-      font-family: var(--font-mono);
-      font-size: 0.85rem;
-      font-weight: 600;
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      color: var(--text-main);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-      transition: var(--transition);
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.5rem 1rem; border-radius: 10px;
+      font-family: var(--mono); font-size: 0.82rem; font-weight: 600;
+      background: var(--card);
+      border: 1px solid var(--line);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      transition: transform 0.25s var(--ease), border-color 0.25s, box-shadow 0.25s;
       cursor: default;
     }
+    .badge:hover { transform: translateY(-3px); border-color: var(--line-strong); box-shadow: 0 8px 24px rgba(0,0,0,0.35); }
+    .badge-label { color: var(--text-faint); }
+    .badge-value { font-weight: 700; }
+    .v-cyan { color: var(--cyan); } .v-violet { color: var(--violet); }
+    .v-pink { color: var(--pink); } .v-red { color: var(--red); }
+    .v-green { color: var(--green); } .v-amber { color: var(--amber); }
 
-    .badge:hover {
-      transform: translateY(-2px);
-      border-color: var(--border-glow);
-    }
-
-    .badge-label {
-      color: var(--text-muted);
-    }
-
-    .badge-value {
-      font-weight: 700;
-    }
-
-    .badge-blue .badge-value { color: var(--accent-cyan); }
-    .badge-purple .badge-value { color: var(--accent-purple); }
-    .badge-pink .badge-value { color: var(--accent-pink); }
-    .badge-red .badge-value { color: var(--accent-red); }
-
-    /* Notice Banner */
-    .notice-banner {
-      background: linear-gradient(90deg, rgba(54, 188, 247, 0.1), rgba(136, 113, 229, 0.15));
-      border: 1px solid var(--border-color);
-      border-left: 4px solid var(--accent-cyan);
-      border-radius: 10px;
-      padding: 1.3rem 1.6rem;
-      margin: 0 auto 3.5rem;
-      max-width: 850px;
-      text-align: left;
-      display: flex;
-      align-items: flex-start;
-      gap: 1.2rem;
-      backdrop-filter: blur(8px);
-    }
-
-    .notice-icon {
-      font-size: 1.8rem;
-      line-height: 1;
-    }
-
-    /* Interactive Terminal Section */
-    .terminal-section {
-      margin-bottom: 4.5rem;
-    }
-
-    .terminal-container {
-      background: #0d1117;
-      border: 1px solid var(--border-color);
-      border-radius: 14px;
+    /* ============================================================
+       MARQUEE
+    ============================================================ */
+    .marquee {
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      background: rgba(9, 14, 26, 0.5);
       overflow: hidden;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+      padding: 0.95rem 0;
+      margin-bottom: 5rem;
+      position: relative; z-index: 2;
+      mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+      -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
     }
+    .marquee-track {
+      display: flex; gap: 3rem; width: max-content;
+      animation: marquee 30s linear infinite;
+      font-family: var(--mono); font-size: 0.85rem; font-weight: 600;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--text-faint); white-space: nowrap;
+    }
+    .marquee:hover .marquee-track { animation-play-state: paused; }
+    .marquee-track em { font-style: normal; color: var(--indigo); }
+    @keyframes marquee { to { transform: translateX(-50%); } }
 
+    /* ============================================================
+       STATS
+    ============================================================ */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.2rem;
+      margin-bottom: 6rem;
+    }
+    .stat-tile {
+      position: relative; overflow: hidden;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 1.6rem 1.5rem 1.4rem;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      transition: transform 0.3s var(--ease), border-color 0.3s;
+    }
+    .stat-tile:hover { transform: translateY(-5px); border-color: var(--line-strong); }
+    .stat-tile::after {
+      content: ''; position: absolute; top: 0; left: 1.4rem; right: 1.4rem; height: 2px;
+      background: var(--grad); border-radius: 2px; opacity: 0.7;
+    }
+    .stat-value {
+      font-family: var(--display);
+      font-size: 2.5rem; font-weight: 700; line-height: 1.1;
+      background: var(--grad);
+      -webkit-background-clip: text; background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: flex; align-items: baseline; gap: 0.2rem;
+    }
+    .stat-value .unit { font-size: 1.1rem; color: var(--text-dim); -webkit-text-fill-color: var(--text-dim); }
+    .stat-label { font-weight: 700; margin-top: 0.35rem; font-size: 0.98rem; }
+    .stat-note { font-family: var(--mono); font-size: 0.76rem; color: var(--text-faint); margin-top: 0.15rem; }
+    .infinity {
+      display: inline-block;
+      background: var(--grad);
+      -webkit-background-clip: text; background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: infinity-pulse 2.4s ease-in-out infinite;
+    }
+    @keyframes infinity-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.18); } }
+
+    /* ============================================================
+       SECTION HEADERS
+    ============================================================ */
+    .section-header { text-align: center; margin-bottom: 3rem; }
+    .section-kicker {
+      font-family: var(--mono); font-size: 0.75rem; font-weight: 700;
+      letter-spacing: 0.3em; text-transform: uppercase;
+      color: var(--indigo); margin-bottom: 0.7rem;
+    }
+    .section-title {
+      font-family: var(--display);
+      font-size: clamp(1.7rem, 5vw, 2.5rem); font-weight: 700;
+      letter-spacing: -0.01em; margin-bottom: 0.6rem; color: #fff;
+    }
+    .section-desc { color: var(--text-dim); font-size: 1rem; max-width: 560px; margin: 0 auto; }
+
+    /* ============================================================
+       TERMINAL
+    ============================================================ */
+    .terminal-section { margin-bottom: 6rem; }
+    .terminal-container {
+      background: rgba(8, 11, 20, 0.92);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255,255,255,0.02) inset,
+                  0 0 60px rgba(56, 189, 248, 0.06);
+    }
     .terminal-header {
-      background: #161b22;
-      padding: 0.8rem 1.2rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(18, 24, 40, 0.9);
+      padding: 0.75rem 1.2rem;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 1rem; flex-wrap: wrap;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
     }
-
-    .terminal-dots {
-      display: flex;
-      gap: 8px;
-    }
-
-    .dot {
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-    }
-
-    .dot-red { background-color: #ff5f56; }
-    .dot-yellow { background-color: #ffbd2e; }
-    .dot-green { background-color: #27c93f; }
-
+    .terminal-dots { display: flex; gap: 8px; }
+    .dot { width: 12px; height: 12px; border-radius: 50%; }
+    .dot-red { background: #ff5f56; } .dot-yellow { background: #ffbd2e; } .dot-green { background: #27c93f; }
     .terminal-title {
-      font-family: var(--font-mono);
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      font-weight: 500;
+      font-family: var(--mono); font-size: 0.8rem;
+      color: var(--text-faint); font-weight: 500;
     }
-
-    .terminal-quick-actions {
-      display: flex;
-      gap: 0.5rem;
-      flex-wrap: wrap;
-    }
-
+    .terminal-quick-actions { display: flex; gap: 0.45rem; flex-wrap: wrap; }
     .cmd-btn {
-      background: rgba(255, 255, 255, 0.06);
+      background: rgba(255, 255, 255, 0.05);
       border: 1px solid rgba(255, 255, 255, 0.1);
-      color: var(--text-main);
-      padding: 0.25rem 0.6rem;
-      border-radius: 4px;
-      font-family: var(--font-mono);
-      font-size: 0.75rem;
-      cursor: pointer;
-      transition: var(--transition);
+      color: var(--text-dim);
+      padding: 0.28rem 0.65rem; border-radius: 6px;
+      font-family: var(--mono); font-size: 0.74rem; font-weight: 600;
+      cursor: pointer; transition: all 0.2s;
     }
-
     .cmd-btn:hover {
-      background: var(--accent-cyan);
-      color: #000;
-      border-color: var(--accent-cyan);
+      background: var(--cyan); color: #04060c; border-color: var(--cyan);
+      box-shadow: 0 0 14px rgba(56, 189, 248, 0.5);
     }
-
     .terminal-body {
-      padding: 1.5rem;
-      font-family: var(--font-mono);
-      font-size: 0.95rem;
-      max-height: 420px;
+      padding: 1.4rem 1.5rem;
+      font-family: var(--mono);
+      font-size: 0.9rem;
+      height: 430px;
       overflow-y: auto;
-      color: #c9d1d9;
+      color: #c9d5ea;
+      background:
+        repeating-linear-gradient(0deg, rgba(255,255,255,0.012) 0 1px, transparent 1px 3px);
     }
-
-    .terminal-output {
-      margin-bottom: 1rem;
-      white-space: pre-wrap;
-      word-break: break-word;
-    }
-
-    .cmd-line {
-      color: var(--accent-cyan);
-      font-weight: 700;
-      margin-top: 0.8rem;
-    }
-
+    .terminal-output { margin-bottom: 0.9rem; white-space: pre-wrap; word-break: break-word; line-height: 1.65; }
+    .cmd-line { color: var(--cyan); font-weight: 700; margin-top: 0.7rem; }
     .terminal-input-row {
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-      margin-top: 1rem;
-      padding-top: 0.8rem;
+      display: flex; align-items: center; gap: 0.6rem;
+      margin-top: 0.8rem; padding-top: 0.8rem;
       border-top: 1px dashed rgba(255, 255, 255, 0.1);
     }
-
-    .prompt-label {
-      color: var(--accent-green);
-      font-weight: 700;
-      user-select: none;
-    }
-
+    .prompt-label { color: var(--green); font-weight: 700; user-select: none; }
     #terminal-input {
-      flex: 1;
-      background: transparent;
-      border: none;
-      color: #fff;
-      font-family: var(--font-mono);
-      font-size: 0.95rem;
-      outline: none;
+      flex: 1; background: transparent; border: none;
+      color: #fff; font-family: var(--mono); font-size: 0.9rem;
+      outline: none; caret-color: var(--cyan);
     }
+    .t-cyan { color: var(--cyan); } .t-violet { color: var(--violet); }
+    .t-pink { color: var(--pink); } .t-green { color: var(--green); }
+    .t-amber { color: var(--amber); } .t-red { color: var(--red); }
+    .t-dim { color: var(--text-faint); }
 
-    /* Section Headers */
-    .section-header {
-      text-align: center;
-      margin-bottom: 2.5rem;
-    }
-
-    .section-title {
-      font-size: 2.2rem;
-      font-weight: 800;
-      margin-bottom: 0.5rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.6rem;
-    }
-
-    .section-desc {
-      color: var(--text-muted);
-      font-size: 1.05rem;
-    }
-
-    /* Progress & Roadmap Grid */
-    .grid-2 {
+    /* ============================================================
+       BENTO CARDS (progress + roadmap)
+    ============================================================ */
+    .bento {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
-      gap: 2rem;
-      margin-bottom: 4.5rem;
-    }
-
-    .card-box {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: 16px;
-      padding: 2rem;
-      display: flex;
-      flex-direction: column;
-      backdrop-filter: blur(8px);
-      transition: var(--transition);
-    }
-
-    .card-box:hover {
-      border-color: var(--border-glow);
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-    }
-
-    .card-title {
-      font-size: 1.4rem;
-      font-weight: 700;
-      margin-bottom: 1.5rem;
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-      padding-bottom: 0.8rem;
-      color: #fff;
-    }
-
-    /* Progress Bars */
-    .progress-list {
-      display: flex;
-      flex-direction: column;
+      grid-template-columns: repeat(12, 1fr);
       gap: 1.4rem;
+      margin-bottom: 6rem;
+    }
+    .card {
+      position: relative;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 2rem;
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      transition: transform 0.35s var(--ease), border-color 0.35s, box-shadow 0.35s;
+      overflow: hidden;
+    }
+    .card::before {
+      content: ''; position: absolute; inset: 0; border-radius: inherit;
+      background: radial-gradient(480px circle at var(--mx, 50%) var(--my, 50%), rgba(129, 140, 248, 0.1), transparent 55%);
+      opacity: 0; transition: opacity 0.4s; pointer-events: none;
+    }
+    .card:hover::before { opacity: 1; }
+    .card:hover { border-color: var(--line-strong); transform: translateY(-4px); box-shadow: 0 22px 60px rgba(0,0,0,0.45); }
+    .card-7 { grid-column: span 7; }
+    .card-5 { grid-column: span 5; }
+    .card-title {
+      font-family: var(--display);
+      font-size: 1.3rem; font-weight: 700; color: #fff;
+      margin-bottom: 1.6rem;
+      display: flex; align-items: center; gap: 0.6rem;
+      padding-bottom: 0.9rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    }
+    .card-title .chip {
+      margin-left: auto;
+      font-family: var(--mono); font-size: 0.68rem; font-weight: 700;
+      letter-spacing: 0.1em; color: var(--indigo);
+      border: 1px solid rgba(129, 140, 248, 0.35);
+      background: rgba(129, 140, 248, 0.08);
+      padding: 0.2rem 0.6rem; border-radius: 999px;
     }
 
-    .progress-item {
-      display: flex;
-      flex-direction: column;
-      gap: 0.4rem;
-    }
-
+    /* Progress bars */
+    .progress-list { display: flex; flex-direction: column; gap: 1.5rem; }
     .progress-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 0.95rem;
-      font-weight: 600;
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 0.95rem; font-weight: 700; margin-bottom: 0.45rem;
     }
-
-    .progress-note {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      font-family: var(--font-mono);
-    }
-
+    .progress-header .pct { font-family: var(--mono); }
     .progress-track {
-      width: 100%;
-      height: 12px;
-      background: #161b22;
-      border-radius: 6px;
-      overflow: hidden;
-      border: 1px solid rgba(255, 255, 255, 0.06);
-    }
-
-    .progress-fill {
-      height: 100%;
-      border-radius: 6px;
-      transition: width 1s ease;
-    }
-
-    /* Flow Step (Roadmap) */
-    .flow-list {
-      display: flex;
-      flex-direction: column;
-      gap: 1.1rem;
-    }
-
-    .flow-step {
-      display: flex;
-      align-items: flex-start;
-      gap: 1rem;
-      background: rgba(0, 0, 0, 0.25);
-      padding: 1.1rem;
-      border-radius: 10px;
+      width: 100%; height: 10px;
+      background: rgba(0, 0, 0, 0.45);
+      border-radius: 6px; overflow: hidden;
       border: 1px solid rgba(255, 255, 255, 0.05);
-      transition: var(--transition);
     }
-
-    .flow-step:hover {
-      border-color: var(--border-glow);
-      transform: translateX(6px);
+    .progress-fill {
+      height: 100%; width: 0; border-radius: 6px;
+      transition: width 1.4s var(--ease);
+      background-size: 24px 24px;
+      background-image: linear-gradient(45deg, rgba(255,255,255,0.14) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.14) 50%, rgba(255,255,255,0.14) 75%, transparent 75%);
+      animation: stripes 1.2s linear infinite;
     }
+    @keyframes stripes { to { background-position: 24px 0; } }
+    .progress-note { font-family: var(--mono); font-size: 0.76rem; color: var(--text-faint); margin-top: 0.35rem; }
 
-    .step-icon {
-      font-size: 1.6rem;
-      flex-shrink: 0;
+    /* Roadmap timeline */
+    .timeline { position: relative; padding-left: 1.9rem; display: flex; flex-direction: column; gap: 1.5rem; }
+    .timeline::before {
+      content: ''; position: absolute; left: 8px; top: 8px; bottom: 8px; width: 2px;
+      background: linear-gradient(180deg, var(--cyan), var(--violet), var(--pink));
+      opacity: 0.5; border-radius: 2px;
     }
-
-    .step-text {
-      font-size: 0.95rem;
+    .tl-step { position: relative; }
+    .tl-step::before {
+      content: ''; position: absolute; left: -1.9rem; top: 6px;
+      width: 14px; height: 14px; border-radius: 50%;
+      background: var(--bg-1);
+      border: 3px solid var(--cyan);
+      box-shadow: 0 0 12px rgba(56, 189, 248, 0.6);
+      margin-left: 2px;
     }
-
-    .step-title {
-      font-weight: 700;
-      color: #fff;
-      margin-bottom: 0.2rem;
+    .tl-step:nth-child(2)::before { border-color: var(--indigo); box-shadow: 0 0 12px rgba(129,140,248,0.6); }
+    .tl-step:nth-child(3)::before { border-color: var(--violet); box-shadow: 0 0 12px rgba(192,132,252,0.6); }
+    .tl-step:nth-child(4)::before { border-color: var(--pink); box-shadow: 0 0 12px rgba(244,114,182,0.6); }
+    .tl-title { font-weight: 700; color: #fff; font-size: 1rem; }
+    .tl-title .tl-tag {
+      font-family: var(--mono); font-size: 0.68rem; font-weight: 700;
+      color: var(--text-faint); margin-left: 0.5rem; letter-spacing: 0.08em;
     }
-
-    .step-desc {
-      color: var(--text-muted);
-      font-size: 0.88rem;
+    .tl-desc { color: var(--text-dim); font-size: 0.88rem; margin-top: 0.15rem; }
+    .tl-loop {
+      margin-top: 0.4rem;
+      font-family: var(--mono); font-size: 0.8rem; font-weight: 700;
+      color: var(--amber);
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      border: 1px dashed rgba(251, 191, 36, 0.4);
+      background: rgba(251, 191, 36, 0.06);
+      padding: 0.5rem 0.9rem; border-radius: 10px;
     }
+    .tl-loop .loop-icon { display: inline-block; animation: spin 3.2s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* FAQ Drawer */
-    .faq-container {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-      margin-bottom: 4.5rem;
+    /* Manifesto card */
+    .manifesto-list { display: flex; flex-direction: column; gap: 1rem; }
+    .manifesto-item {
+      display: flex; gap: 0.9rem; align-items: flex-start;
+      background: rgba(0, 0, 0, 0.22);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      padding: 1rem 1.1rem; border-radius: 12px;
+      transition: transform 0.3s var(--ease), border-color 0.3s;
     }
+    .manifesto-item:hover { transform: translateX(6px); border-color: var(--line-strong); }
+    .manifesto-icon { font-size: 1.4rem; line-height: 1.4; }
+    .manifesto-item b { color: #fff; display: block; font-size: 0.95rem; }
+    .manifesto-item span { color: var(--text-dim); font-size: 0.85rem; }
 
+    /* Notice card */
+    .notice-card {
+      display: flex; align-items: flex-start; gap: 1.1rem;
+      background: linear-gradient(120deg, rgba(56, 189, 248, 0.08), rgba(192, 132, 252, 0.1));
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 1.5rem 1.7rem;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      margin: 0 auto 5rem;
+      max-width: 820px;
+    }
+    .notice-icon { font-size: 1.9rem; line-height: 1.2; }
+    .notice-card b { color: #fff; font-size: 1.1rem; display: block; margin-bottom: 0.25rem; }
+    .notice-card p { color: var(--text-dim); font-size: 0.95rem; }
+
+    /* ============================================================
+       FAQ
+    ============================================================ */
+    .faq-section { margin-bottom: 6rem; }
+    .faq-container { display: flex; flex-direction: column; gap: 0.9rem; max-width: 820px; margin: 0 auto; }
     details.faq-item {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: 10px;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
       overflow: hidden;
-      transition: var(--transition);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      transition: border-color 0.3s;
     }
-
-    details.faq-item[open] {
-      border-color: var(--border-glow);
-    }
-
+    details.faq-item[open] { border-color: var(--line-strong); background: rgba(20, 28, 48, 0.65); }
     summary.faq-question {
-      padding: 1.3rem 1.6rem;
-      font-weight: 700;
-      font-size: 1.08rem;
-      cursor: pointer;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      list-style: none;
+      padding: 1.2rem 1.5rem;
+      font-weight: 700; font-size: 1.02rem;
+      cursor: pointer; list-style: none;
+      display: flex; justify-content: space-between; align-items: center; gap: 1rem;
       user-select: none;
+      transition: color 0.25s;
     }
-
-    summary.faq-question::-webkit-details-marker {
-      display: none;
-    }
-
+    summary.faq-question:hover { color: var(--cyan); }
+    summary.faq-question::-webkit-details-marker { display: none; }
     summary.faq-question::after {
       content: '+';
-      font-family: var(--font-mono);
-      font-size: 1.4rem;
-      color: var(--accent-cyan);
-      transition: var(--transition);
+      font-family: var(--mono); font-size: 1.5rem; font-weight: 400;
+      color: var(--indigo);
+      transition: transform 0.35s var(--ease);
+      flex-shrink: 0;
     }
-
-    details[open] summary.faq-question::after {
-      content: '−';
-      transform: rotate(180deg);
-    }
-
+    details[open] summary.faq-question::after { transform: rotate(225deg); }
     .faq-answer {
-      padding: 0 1.6rem 1.3rem;
-      color: var(--text-muted);
-      font-size: 0.98rem;
-      border-top: 1px solid rgba(255, 255, 255, 0.05);
-      padding-top: 1.1rem;
+      padding: 0 1.5rem 1.3rem;
+      color: var(--text-dim); font-size: 0.95rem;
     }
+    .faq-answer .t-cyan { font-family: var(--mono); font-size: 0.88em; }
 
-    /* Footer */
+    /* ============================================================
+       FOOTER
+    ============================================================ */
     footer {
+      position: relative; z-index: 2;
       text-align: center;
-      padding: 3.5rem 1.5rem;
-      border-top: 1px solid rgba(255, 255, 255, 0.08);
-      color: var(--text-muted);
-      font-size: 0.9rem;
+      padding: 4.5rem 1.5rem 3rem;
+      border-top: 1px solid var(--line);
+      color: var(--text-dim); font-size: 0.9rem;
+      overflow: hidden;
     }
-
+    .footer-watermark {
+      position: absolute; left: 50%; bottom: -2.2rem;
+      transform: translateX(-50%);
+      font-family: var(--display); font-weight: 700;
+      font-size: clamp(4rem, 16vw, 12rem);
+      letter-spacing: 0.02em; line-height: 1;
+      color: transparent;
+      -webkit-text-stroke: 1px rgba(125, 180, 255, 0.09);
+      user-select: none; pointer-events: none; white-space: nowrap;
+    }
     .footer-quote {
-      font-style: italic;
-      color: var(--text-main);
-      margin-bottom: 1.5rem;
-      max-width: 650px;
-      margin-left: auto;
-      margin-right: auto;
+      font-style: italic; color: var(--text);
+      margin: 0 auto 1.6rem; max-width: 640px;
       background: rgba(255, 255, 255, 0.03);
-      padding: 1.2rem;
-      border-radius: 8px;
-      border: 1px solid rgba(255, 255, 255, 0.05);
+      padding: 1.2rem 1.5rem; border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      transition: opacity 0.5s;
+    }
+    .footer-quote.fading { opacity: 0; }
+    .footer-award { margin-bottom: 1.3rem; font-size: 1rem; }
+    .footer-fineprint { font-size: 0.82rem; color: var(--text-faint); margin-top: 0.5rem; }
+
+    /* Toast */
+    #toast {
+      position: fixed; bottom: 2rem; left: 50%;
+      transform: translate(-50%, 20px);
+      background: rgba(13, 20, 36, 0.95);
+      border: 1px solid var(--line-strong);
+      color: var(--text);
+      font-family: var(--mono); font-size: 0.85rem; font-weight: 600;
+      padding: 0.85rem 1.4rem; border-radius: 12px;
+      box-shadow: 0 16px 50px rgba(0,0,0,0.6), 0 0 30px rgba(129,140,248,0.15);
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.35s var(--ease), transform 0.35s var(--ease);
+      z-index: 9500; max-width: 90vw; text-align: center;
+    }
+    #toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+    /* ============================================================
+       RESPONSIVE
+    ============================================================ */
+    @media (max-width: 900px) {
+      .card-7, .card-5 { grid-column: span 12; }
+    }
+    @media (max-width: 768px) {
+      .top-bar { padding: 0.8rem 1.1rem; }
+      .nav-links { display: none; }
+      .hero { padding-top: 4.5rem; }
+      .terminal-body { height: 380px; font-size: 0.82rem; }
+      .terminal-quick-actions { width: 100%; justify-content: flex-start; }
     }
 
-    .text-cyan { color: var(--accent-cyan); }
-    .text-purple { color: var(--accent-purple); }
-    .text-pink { color: var(--accent-pink); }
-    .text-green { color: var(--accent-green); }
-
-    /* Responsive */
-    @media (max-width: 768px) {
-      .top-bar { padding: 0.8rem 1rem; }
-      .nav-links { display: none; }
-      .hero-banner-title { font-size: 2.5rem; }
-      .grid-2 { grid-template-columns: 1fr; }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+      html { scroll-behavior: auto; }
+      .reveal { opacity: 1; transform: none; }
     }
   </style>
 </head>
 <body>
 
-  <canvas id="canvas-bg"></canvas>
+  <!-- BOOT PRELOADER -->
+  <div id="boot" aria-hidden="true">
+    <div class="boot-inner">
+      <div id="boot-lines"></div>
+      <div class="boot-bar"><i></i></div>
+    </div>
+  </div>
 
-  <!-- Top Bar -->
+  <!-- BACKGROUND LAYERS -->
+  <div class="aurora" aria-hidden="true"><span class="a1"></span><span class="a2"></span><span class="a3"></span></div>
+  <canvas id="stars" aria-hidden="true"></canvas>
+  <div class="grid-overlay" aria-hidden="true"></div>
+  <div class="noise" aria-hidden="true"></div>
+  <canvas id="matrix" aria-hidden="true"></canvas>
+
+  <div id="scroll-progress" aria-hidden="true"></div>
+
+  <!-- NAV -->
   <nav class="top-bar">
     <a href="#" class="brand">
-      <div class="brand-icon">D</div>
-      <span>DIANPUSHU <small style="font-size:0.75rem; color:var(--text-muted); font-weight:400;">(組織公開首頁)</small></span>
+      <div class="brand-icon">D_</div>
+      <span>DIANPUSHU</span>
     </a>
     <div class="nav-links">
       <a href="#whoami">關於我們</a>
-      <a href="#terminal">互動終端機</a>
+      <a href="#terminal">終端機</a>
       <a href="#progress">開發進度</a>
-      <a href="#roadmap">路線圖</a>
-      <a href="#faq">常見問題</a>
+      <a href="#faq">FAQ</a>
+      <a href="https://github.com/Dianpushu" target="_blank" rel="noopener">GitHub ↗</a>
     </div>
     <div class="status-pill">
       <span class="status-dot"></span>
-      <span>PUBLIC PORTAL</span>
+      <span>SYSTEM ONLINE</span>
     </div>
   </nav>
 
-  <!-- Main Content -->
-  <main class="container">
+  <main>
 
-    <!-- Hero Section -->
-    <section class="hero" id="whoami">
-      <h1 class="hero-banner-title">DIANPUSHU</h1>
-      <p class="hero-subtitle">Est. 2026 · Something is brewing</p>
-      
-      <div class="typing-box">
-        <span id="typing-text"></span><span class="cursor"></span>
+    <!-- HERO -->
+    <div class="container">
+      <section class="hero" id="whoami">
+        <div><span class="hero-eyebrow">Organization · Public Portal</span></div>
+        <h1 class="hero-title" data-text="DIANPUSHU">DIANPUSHU</h1>
+        <p class="hero-sub">EST. 2026 — <b>Something is brewing.</b></p>
+
+        <div class="typing-box">
+          <span class="prompt-sign">❯</span><span id="typing-text"></span><span class="cursor"></span>
+        </div>
+
+        <div class="hero-cta">
+          <a class="btn btn-primary" href="#terminal">⌨ 進入終端機</a>
+          <a class="btn btn-ghost" href="https://github.com/Dianpushu" target="_blank" rel="noopener">☆ 追蹤我們的 GitHub</a>
+        </div>
+
+        <div class="badges-bar">
+          <div class="badge"><span class="badge-label">status</span><span class="badge-value v-cyan">醞釀中</span></div>
+          <div class="badge"><span class="badge-label">products</span><span class="badge-value v-red">0 (inactive)</span></div>
+          <div class="badge"><span class="badge-label">ideas</span><span class="badge-value v-violet">∞ 無限大</span></div>
+          <div class="badge"><span class="badge-label">vibes</span><span class="badge-value v-pink">immaculate</span></div>
+          <div class="badge" id="visitor-badge" style="cursor: pointer;" title="點擊為本頁增加熱度！">
+            <span class="badge-label">👁 路過人數</span>
+            <span class="badge-value v-green" id="visitor-count">1,337</span>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- MARQUEE -->
+    <div class="marquee" aria-hidden="true">
+      <div class="marquee-track" id="marquee-track">
+        <span>Something is brewing <em>✦</em></span>
+        <span>Est. 2026 <em>✦</em></span>
+        <span>Ideas: ∞ <em>✦</em></span>
+        <span>Shipping: Soon™ <em>✦</em></span>
+        <span>Powered by friendship &amp; caffeine <em>✦</em></span>
+        <span>100% certified procrastination <em>✦</em></span>
+        <span>404 products found <em>✦</em></span>
       </div>
+    </div>
 
-      <!-- Badges Bar -->
-      <div class="badges-bar">
-        <div class="badge badge-blue">
-          <span class="badge-label">status</span>
-          <span class="badge-value">醞釀中</span>
-        </div>
-        <div class="badge badge-red">
-          <span class="badge-label">products</span>
-          <span class="badge-value">0 (inactive)</span>
-        </div>
-        <div class="badge badge-purple">
-          <span class="badge-label">ideas</span>
-          <span class="badge-value">∞ (無限大)</span>
-        </div>
-        <div class="badge badge-pink">
-          <span class="badge-label">vibes</span>
-          <span class="badge-value">讚 (Vibes Only)</span>
-        </div>
-        <div class="badge badge-blue" id="visitor-badge" style="cursor: pointer;" title="點擊為本頁增加熱度！">
-          <span class="badge-label">👁️ 路過人數</span>
-          <span class="badge-value" id="visitor-count">1,337</span>
-        </div>
-      </div>
+    <div class="container">
 
-      <!-- Notice Banner -->
-      <div class="notice-banner">
+      <!-- STATS -->
+      <section class="stats-grid">
+        <div class="stat-tile reveal">
+          <div class="stat-value"><span class="infinity">∞</span></div>
+          <div class="stat-label">點子庫存量</div>
+          <div class="stat-note">// 每晚 11 點後暴增</div>
+        </div>
+        <div class="stat-tile reveal" style="transition-delay: 0.08s;">
+          <div class="stat-value"><span data-count="0">0</span></div>
+          <div class="stat-label">已發布產品</div>
+          <div class="stat-note">// 數據極為穩定</div>
+        </div>
+        <div class="stat-tile reveal" style="transition-delay: 0.16s;">
+          <div class="stat-value"><span data-count="72">0</span><span class="unit">hr+</span></div>
+          <div class="stat-label">取名會議總時數</div>
+          <div class="stat-note">// 成果豐碩，值得</div>
+        </div>
+        <div class="stat-tile reveal" style="transition-delay: 0.24s;">
+          <div class="stat-value"><span data-count="9427">0</span><span class="unit">杯</span></div>
+          <div class="stat-label">咖啡因總攝取</div>
+          <div class="stat-note">// 本數據仍在成長</div>
+        </div>
+      </section>
+
+      <!-- NOTICE -->
+      <div class="notice-card reveal">
         <div class="notice-icon">🕵️</div>
         <div>
-          <strong style="color: #fff; font-size: 1.15rem; display: block; margin-bottom: 0.3rem;">你發現了一個神秘組織。</strong>
-          <p style="color: var(--text-muted); font-size: 0.98rem; line-height: 1.5;">這裡目前什麼都沒有，但我們對此感到非常自豪。我們正在默默孵化最酷的想法與靈感，隨時準備驚豔世界。</p>
+          <b>你發現了一個神祕組織。</b>
+          <p>這裡目前什麼都沒有，但我們對此感到非常自豪。我們正在默默孵化最酷的想法與靈感，隨時準備驚豔世界。想深入調查？往下捲動，打開終端機。</p>
         </div>
       </div>
-    </section>
 
-    <!-- Interactive Terminal Section -->
-    <section class="terminal-section" id="terminal">
-      <div class="section-header">
-        <h2 class="section-title">💻 組織終端模擬器 <span style="font-size:1rem; font-family:var(--font-mono); color:var(--accent-cyan);">$ dianpushu-cli</span></h2>
-        <p class="section-desc">直接在鍵盤輸入指令，或點擊上方按鈕進行探索</p>
-      </div>
-
-      <div class="terminal-container">
-        <div class="terminal-header">
-          <div class="terminal-dots">
-            <span class="dot dot-red"></span>
-            <span class="dot dot-yellow"></span>
-            <span class="dot dot-green"></span>
-          </div>
-          <div class="terminal-title">bash - guest@dianpushu-public:~</div>
-          <div class="terminal-quick-actions">
-            <button class="cmd-btn" onclick="runCommand('whoami')">whoami</button>
-            <button class="cmd-btn" onclick="runCommand('ls -l ./products')">ls ./products</button>
-            <button class="cmd-btn" onclick="runCommand('git log --oneline')">git log</button>
-            <button class="cmd-btn" onclick="runCommand('status')">status</button>
-            <button class="cmd-btn" onclick="runCommand('roadmap')">roadmap</button>
-            <button class="cmd-btn" onclick="runCommand('clear')">clear</button>
-          </div>
+      <!-- TERMINAL -->
+      <section class="terminal-section" id="terminal">
+        <div class="section-header reveal">
+          <div class="section-kicker">Interactive Shell</div>
+          <h2 class="section-title">組織終端模擬器</h2>
+          <p class="section-desc">直接輸入指令探索本組織。支援 <b>↑↓</b> 歷史紀錄與 <b>Tab</b> 自動補全。試試 <code style="font-family: var(--mono); color: var(--cyan);">neofetch</code> 或 <code style="font-family: var(--mono); color: var(--pink);">hack</code>。</p>
         </div>
 
-        <div class="terminal-body" id="terminal-body">
-          <div class="terminal-output">歡迎來到 Dianpushu 組織公開終端系統 v2026.07.
-輸入 <span class="text-cyan">help</span> 查看可用指令清單，或點擊快捷鍵。
-------------------------------------------------------------------</div>
-          <div id="terminal-history"></div>
-          <div class="terminal-input-row">
-            <span class="prompt-label">guest@dianpushu:~$</span>
-            <input type="text" id="terminal-input" placeholder="輸入指令 (例如: whoami, status, git log)..." autocomplete="off" spellcheck="false" />
+        <div class="terminal-container reveal">
+          <div class="terminal-header">
+            <div class="terminal-dots">
+              <span class="dot dot-red"></span><span class="dot dot-yellow"></span><span class="dot dot-green"></span>
+            </div>
+            <div class="terminal-title">zsh — guest@dianpushu: ~</div>
+            <div class="terminal-quick-actions">
+              <button class="cmd-btn" onclick="runCommand('help')">help</button>
+              <button class="cmd-btn" onclick="runCommand('neofetch')">neofetch</button>
+              <button class="cmd-btn" onclick="runCommand('status')">status</button>
+              <button class="cmd-btn" onclick="runCommand('hack')">hack</button>
+              <button class="cmd-btn" onclick="runCommand('matrix')">matrix</button>
+              <button class="cmd-btn" onclick="runCommand('clear')">clear</button>
+            </div>
           </div>
-        </div>
-      </div>
-    </section>
 
-    <!-- Progress & Roadmap Grid -->
-    <section id="progress">
-      <div class="grid-2">
-        <!-- Progress Box -->
-        <div class="card-box">
-          <h3 class="card-title">📈 開發進度報告</h3>
-          <div class="progress-list">
-            <div class="progress-item">
-              <div class="progress-header">
-                <span style="color:#fff;">1. 取組織名字</span>
-                <span class="text-cyan">100%</span>
-              </div>
-              <div class="progress-track">
-                <div class="progress-fill" style="width: 100%; background: var(--accent-cyan);"></div>
-              </div>
-              <div class="progress-note">← 吵了三天的傑出成果</div>
-            </div>
-
-            <div class="progress-item">
-              <div class="progress-header">
-                <span style="color:#fff;">2. 設計 Logo</span>
-                <span class="text-purple">30%</span>
-              </div>
-              <div class="progress-track">
-                <div class="progress-fill" style="width: 30%; background: var(--accent-purple);"></div>
-              </div>
-              <div class="progress-note">← 有人畫了一個圓</div>
-            </div>
-
-            <div class="progress-item">
-              <div class="progress-header">
-                <span style="color:#fff;">3. 寫程式碼 (Coding)</span>
-                <span class="text-pink">0%</span>
-              </div>
-              <div class="progress-track">
-                <div class="progress-fill" style="width: 0%; background: var(--accent-pink);"></div>
-              </div>
-              <div class="progress-note">← 快了快了，馬上開始</div>
-            </div>
-
-            <div class="progress-item">
-              <div class="progress-header">
-                <span style="color:#fff;">4. 統治世界</span>
-                <span style="color:var(--text-muted);">0%</span>
-              </div>
-              <div class="progress-track">
-                <div class="progress-fill" style="width: 0%; background: var(--text-muted);"></div>
-              </div>
-              <div class="progress-note">← 已排入 backlog 待辦事項</div>
+          <div class="terminal-body" id="terminal-body">
+            <div class="terminal-output">歡迎登入 <span class="t-cyan">Dianpushu 公開終端系統</span> v2.0.26
+輸入 <span class="t-cyan">help</span> 查看指令清單。溫馨提示：這裡藏了不少彩蛋。
+────────────────────────────────────────────────</div>
+            <div id="terminal-history"></div>
+            <div class="terminal-input-row">
+              <span class="prompt-label">guest@dianpushu:~$</span>
+              <input type="text" id="terminal-input" placeholder="輸入指令… (help / neofetch / sudo …)" autocomplete="off" spellcheck="false" aria-label="終端機指令輸入" />
             </div>
           </div>
         </div>
+      </section>
 
-        <!-- Roadmap Box -->
-        <div class="card-box" id="roadmap">
-          <h3 class="card-title">🗺️ 組織 Roadmap 循環</h3>
-          <div class="flow-list">
-            <div class="flow-step">
-              <div class="step-icon">💡</div>
-              <div class="step-text">
-                <div class="step-title">步驟一：有個超讚的點子</div>
-                <div class="step-desc">群組裡突然出現驚天動地的產品構想。</div>
+      <!-- BENTO: PROGRESS + ROADMAP + MANIFESTO -->
+      <section id="progress">
+        <div class="section-header reveal">
+          <div class="section-kicker">Transparency Report</div>
+          <h2 class="section-title">開發進度 &amp; 路線圖</h2>
+          <p class="section-desc">絕對真實、毫無美化的第一手數據。</p>
+        </div>
+
+        <div class="bento">
+          <!-- Progress card -->
+          <div class="card card-7 reveal">
+            <h3 class="card-title">📈 開發進度報告 <span class="chip">LIVE</span></h3>
+            <div class="progress-list">
+              <div class="progress-item">
+                <div class="progress-header">
+                  <span>1. 取組織名字</span><span class="pct t-cyan">100%</span>
+                </div>
+                <div class="progress-track"><div class="progress-fill" data-width="100%" style="background-color: var(--cyan);"></div></div>
+                <div class="progress-note">← 吵了三天的傑出成果</div>
+              </div>
+              <div class="progress-item">
+                <div class="progress-header">
+                  <span>2. 設計 Logo</span><span class="pct t-violet">30%</span>
+                </div>
+                <div class="progress-track"><div class="progress-fill" data-width="30%" style="background-color: var(--violet);"></div></div>
+                <div class="progress-note">← 有人畫了一個圓</div>
+              </div>
+              <div class="progress-item">
+                <div class="progress-header">
+                  <span>3. 寫程式碼 (Coding)</span><span class="pct t-pink">0%</span>
+                </div>
+                <div class="progress-track"><div class="progress-fill" data-width="1.2%" style="background-color: var(--pink);"></div></div>
+                <div class="progress-note">← 快了快了，馬上開始</div>
+              </div>
+              <div class="progress-item">
+                <div class="progress-header">
+                  <span>4. 統治世界</span><span class="pct t-dim">0%</span>
+                </div>
+                <div class="progress-track"><div class="progress-fill" data-width="0%" style="background-color: var(--text-faint);"></div></div>
+                <div class="progress-note">← 已排入 backlog 待辦事項</div>
               </div>
             </div>
-            <div class="flow-step">
-              <div class="step-icon">📦</div>
-              <div class="step-text">
-                <div class="step-title">步驟二：開一個新 Repo</div>
-                <div class="step-desc">二話不說立即 git init，先開 repository 氣勢不能輸。</div>
+          </div>
+
+          <!-- Roadmap timeline -->
+          <div class="card card-5 reveal" id="roadmap" style="transition-delay: 0.1s;">
+            <h3 class="card-title">🗺️ Roadmap 循環 <span class="chip">∞ LOOP</span></h3>
+            <div class="timeline">
+              <div class="tl-step">
+                <div class="tl-title">💡 有個超讚的點子 <span class="tl-tag">STEP 01</span></div>
+                <div class="tl-desc">群組裡突然出現驚天動地的產品構想。</div>
+              </div>
+              <div class="tl-step">
+                <div class="tl-title">📦 開一個新 Repo <span class="tl-tag">STEP 02</span></div>
+                <div class="tl-desc">二話不說立即 git init，氣勢絕對不能輸。</div>
+              </div>
+              <div class="tl-step">
+                <div class="tl-title">🎨 幫 Repo 取名字 <span class="tl-tag">STEP 03</span></div>
+                <div class="tl-desc">全體熱烈討論三天三夜，只為決定完美的名字。</div>
+              </div>
+              <div class="tl-step">
+                <div class="tl-title">😴 擱置三個月 <span class="tl-tag">STEP 04</span></div>
+                <div class="tl-desc">心滿意足地放空，靜候下一個超讚點子降臨。</div>
+                <div class="tl-loop"><span class="loop-icon">🔄</span> GOTO STEP 01 — 無限迴圈</div>
               </div>
             </div>
-            <div class="flow-step">
-              <div class="step-icon">🎨</div>
-              <div class="step-text">
-                <div class="step-title">步驟三：幫 Repo 取名字</div>
-                <div class="step-desc">全體熱烈討論三天三夜，只為了決定完美的名字。</div>
+          </div>
+
+          <!-- Manifesto card -->
+          <div class="card card-7 reveal">
+            <h3 class="card-title">📜 組織核心價值 <span class="chip">MANIFESTO</span></h3>
+            <div class="manifesto-list">
+              <div class="manifesto-item">
+                <div class="manifesto-icon">🐢</div>
+                <div><b>慢工出細活</b><span>我們不是慢，我們是在讓點子充分熟成，像單一麥芽威士忌。</span></div>
+              </div>
+              <div class="manifesto-item">
+                <div class="manifesto-icon">🔒</div>
+                <div><b>神祕感即是專業感</b><span>所有內部專案嚴格保密——主要是因為還不存在。</span></div>
+              </div>
+              <div class="manifesto-item">
+                <div class="manifesto-icon">🚀</div>
+                <div><b>永遠準備驚豔世界</b><span>處於「隨時可以開始」的狀態已長達數月，紀律驚人。</span></div>
               </div>
             </div>
-            <div class="flow-step">
-              <div class="step-icon">😴</div>
-              <div class="step-text">
-                <div class="step-title">步驟四：擱置三個月</div>
-                <div class="step-desc">名字取好後全體心滿意足地放空，之後無限迴圈回步驟一。</div>
+          </div>
+
+          <!-- Tech stack / recruiting card -->
+          <div class="card card-5 reveal" style="transition-delay: 0.1s;">
+            <h3 class="card-title">🧪 技術棧 <span class="chip">STACK</span></h3>
+            <div class="manifesto-list">
+              <div class="manifesto-item">
+                <div class="manifesto-icon">☕</div>
+                <div><b>Caffeine.js</b><span>核心驅動引擎，24/7 高可用。</span></div>
+              </div>
+              <div class="manifesto-item">
+                <div class="manifesto-icon">💬</div>
+                <div><b>群組聊天室</b><span>主要開發環境，issue 追蹤兼點子孵化器。</span></div>
+              </div>
+              <div class="manifesto-item">
+                <div class="manifesto-icon">🛌</div>
+                <div><b>Procrastination OS</b><span>LTS 長期支援版本，穩定性無可挑剔。</span></div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- FAQ Section -->
-    <section class="terminal-section" id="faq">
-      <div class="section-header">
-        <h2 class="section-title">❓ 你可能想問 (FAQ)</h2>
-        <p class="section-desc">關於 Dianpushu 組織的百問百答</p>
-      </div>
+      <!-- FAQ -->
+      <section class="faq-section" id="faq">
+        <div class="section-header reveal">
+          <div class="section-kicker">Q &amp; A</div>
+          <h2 class="section-title">你可能想問</h2>
+          <p class="section-desc">關於 Dianpushu 組織的百問百答。</p>
+        </div>
 
-      <div class="faq-container">
-        <details class="faq-item">
-          <summary class="faq-question">你們這個組織到底在做什麼？</summary>
-          <div class="faq-answer">好問題。其實我們自己也很想知道。目前我們正專注於把極具潛力的創意無限期保存在構想階段。</div>
-        </details>
-        <details class="faq-item">
-          <summary class="faq-question">什麼時候會有第一個正式發布的產品專案？</summary>
-          <div class="faq-answer">Soon™ (此商標不構成任何具體時程承諾，請依實際釋出狀況為準)。</div>
-        </details>
-        <details class="faq-item">
-          <summary class="faq-question">可以申請加入你們嗎？</summary>
-          <div class="faq-answer">我們完全感受得到你的誠意與熱情！等我們想起來我們要幹嘛、並且寫好專案架構之後，就隨時輪到你了。</div>
-        </details>
-        <details class="faq-item">
-          <summary class="faq-question">這個頁面是認真的嗎？</summary>
-          <div class="faq-answer">我們對於「不認真」及「幽默感」這兩件事，抱持著絕對 100% 認真且專業的態度。</div>
-        </details>
-      </div>
-    </section>
+        <div class="faq-container reveal">
+          <details class="faq-item">
+            <summary class="faq-question">你們這個組織到底在做什麼？</summary>
+            <div class="faq-answer">好問題。其實我們自己也很想知道。目前我們正專注於把極具潛力的創意無限期保存在構想階段——這是一門被嚴重低估的藝術。</div>
+          </details>
+          <details class="faq-item">
+            <summary class="faq-question">什麼時候會有第一個正式發布的產品？</summary>
+            <div class="faq-answer">Soon™（此商標不構成任何具體時程承諾，實際釋出日期請以平行宇宙的版本為準）。</div>
+          </details>
+          <details class="faq-item">
+            <summary class="faq-question">可以申請加入你們嗎？</summary>
+            <div class="faq-answer">我們完全感受得到你的誠意與熱情！等我們想起來我們要幹嘛、並且寫好專案架構之後，就隨時輪到你了。在那之前，歡迎先在 GitHub 按個 follow 表達心意。</div>
+          </details>
+          <details class="faq-item">
+            <summary class="faq-question">這個頁面藏了哪些彩蛋？</summary>
+            <div class="faq-answer">終端機裡試試 <span class="t-cyan">sudo</span>、<span class="t-cyan">hack</span>、<span class="t-cyan">matrix</span>、<span class="t-cyan">coffee</span>、<span class="t-cyan">neofetch</span>。另外，聽說有一組傳說中的按鍵秘技（↑↑↓↓←→←→BA）……</div>
+          </details>
+          <details class="faq-item">
+            <summary class="faq-question">這個頁面是認真的嗎？</summary>
+            <div class="faq-answer">我們對於「不認真」及「幽默感」這兩件事，抱持著絕對 100% 認真且專業的態度。</div>
+          </details>
+        </div>
+      </section>
 
+    </div>
   </main>
 
-  <!-- Footer -->
+  <!-- FOOTER -->
   <footer>
+    <div class="footer-watermark" aria-hidden="true">DIANPUSHU</div>
     <div class="footer-quote" id="dev-quote">
       "Programming is the art of telling another human what one wants the computer to do." — Donald Knuth
     </div>
-    <div style="margin-bottom: 1.2rem; font-size: 1.05rem;">
-      🏆 <strong>本月最佳員工</strong>：<span class="text-cyan">這個位置還空著（虛位以待）</span>
-    </div>
+    <div class="footer-award">🏆 <strong>本月最佳員工</strong>：<span class="t-cyan">這個位置還空著（虛位以待）</span></div>
     <p>© 2026 Dianpushu · 本組織由 100% 再生拖延症製成 · 無任何產品在本頁製作過程中受到傷害</p>
-    <p style="margin-top:0.5rem; font-size:0.82rem; color: #525d70;">Powered by GitHub Pages</p>
+    <p class="footer-fineprint">Powered by GitHub Pages · Fueled by caffeine · Uptime: 比我們的產能還高</p>
   </footer>
 
+  <div id="toast" role="status"></div>
+
   <script>
+    'use strict';
+    const REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
     /* =========================================================
-       DYNAMIC BACKGROUND CANVAS PARTICLES
+       BOOT SEQUENCE
     ========================================================= */
-    const canvas = document.getElementById('canvas-bg');
+    const bootEl = document.getElementById('boot');
+    const bootLinesEl = document.getElementById('boot-lines');
+    const bootScript = [
+      '> BOOTING DIANPUSHU PUBLIC PORTAL v2.0 …',
+      '> 載入拖延症核心模組 ………………… <span class="ok">OK</span>',
+      '> 載入無限點子產生器 ………………… <span class="ok">OK</span>',
+      '> 掃描已發布產品 ……………………… <span class="warn">NOT FOUND (as expected)</span>',
+      '> 初始化氣勢 …………………………… <span class="max">MAX</span>',
+      '> WELCOME, GUEST.'
+    ];
+    function finishBoot() {
+      bootEl.classList.add('done');
+      setTimeout(() => bootEl.remove(), 700);
+    }
+    if (REDUCED || sessionStorage.getItem('dp-booted')) {
+      finishBoot();
+    } else {
+      bootScript.forEach((line, i) => {
+        setTimeout(() => {
+          const div = document.createElement('div');
+          div.className = 'boot-line';
+          div.innerHTML = line;
+          bootLinesEl.appendChild(div);
+        }, 150 + i * 230);
+      });
+      setTimeout(finishBoot, 150 + bootScript.length * 230 + 500);
+      bootEl.addEventListener('click', finishBoot);
+      sessionStorage.setItem('dp-booted', '1');
+    }
+
+    /* =========================================================
+       STARFIELD (mouse-reactive)
+    ========================================================= */
+    const canvas = document.getElementById('stars');
     const ctx = canvas.getContext('2d');
-    let width = canvas.width = window.innerWidth;
-    let height = canvas.height = window.innerHeight;
-    let particles = [];
+    let W = canvas.width = innerWidth;
+    let H = canvas.height = innerHeight;
+    let stars = [];
+    const mouse = { x: -9999, y: -9999 };
 
-    window.addEventListener('resize', () => {
-      width = canvas.width = window.innerWidth;
-      height = canvas.height = window.innerHeight;
-      initParticles();
+    addEventListener('resize', () => {
+      W = canvas.width = innerWidth;
+      H = canvas.height = innerHeight;
+      initStars();
     });
+    addEventListener('pointermove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
 
-    class Particle {
-      constructor() {
-        this.reset();
+    class Star {
+      constructor() { this.reset(true); }
+      reset(spawn) {
+        this.x = Math.random() * W;
+        this.y = spawn ? Math.random() * H : -5;
+        this.size = Math.random() * 1.8 + 0.4;
+        this.vx = (Math.random() - 0.5) * 0.25;
+        this.vy = Math.random() * 0.25 + 0.05;
+        this.alpha = Math.random() * 0.6 + 0.2;
+        this.tw = Math.random() * Math.PI * 2;
+        this.hue = Math.random() < 0.75 ? '138, 197, 255' : '196, 160, 255';
       }
-      reset() {
-        this.x = Math.random() * width;
-        this.y = Math.random() * height;
-        this.size = Math.random() * 2 + 1;
-        this.speedX = (Math.random() - 0.5) * 0.5;
-        this.speedY = (Math.random() - 0.5) * 0.5;
-        this.alpha = Math.random() * 0.5 + 0.2;
-      }
-      update() {
-        this.x += this.speedX;
-        this.y += this.speedY;
-        if (this.x < 0 || this.x > width || this.y < 0 || this.y > height) {
-          this.reset();
+      step() {
+        this.x += this.vx; this.y += this.vy;
+        this.tw += 0.035;
+        // gentle repulsion from cursor
+        const dx = this.x - mouse.x, dy = this.y - mouse.y;
+        const d2 = dx * dx + dy * dy;
+        if (d2 < 16000) {
+          const d = Math.sqrt(d2) || 1;
+          this.x += (dx / d) * 1.1;
+          this.y += (dy / d) * 1.1;
         }
+        if (this.y > H + 5 || this.x < -5 || this.x > W + 5) this.reset(false);
       }
       draw() {
-        ctx.fillStyle = `rgba(54, 188, 247, ${this.alpha})`;
+        const a = this.alpha * (0.65 + 0.35 * Math.sin(this.tw));
+        ctx.fillStyle = 'rgba(' + this.hue + ',' + a + ')';
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
         ctx.fill();
       }
     }
 
-    function initParticles() {
-      particles = [];
-      const count = Math.min(Math.floor((width * height) / 13000), 75);
-      for (let i = 0; i < count; i++) {
-        particles.push(new Particle());
+    // occasional shooting star
+    let shooting = null;
+    function maybeShoot() {
+      if (!shooting && Math.random() < 0.005) {
+        shooting = {
+          x: Math.random() * W * 0.7 + W * 0.15, y: Math.random() * H * 0.3,
+          vx: 7 + Math.random() * 5, vy: 3 + Math.random() * 2, life: 1
+        };
+      }
+      if (shooting) {
+        shooting.life -= 0.02;
+        shooting.x += shooting.vx; shooting.y += shooting.vy;
+        const grad = ctx.createLinearGradient(shooting.x, shooting.y, shooting.x - shooting.vx * 10, shooting.y - shooting.vy * 10);
+        grad.addColorStop(0, 'rgba(190, 220, 255, ' + (0.9 * shooting.life) + ')');
+        grad.addColorStop(1, 'rgba(190, 220, 255, 0)');
+        ctx.strokeStyle = grad;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(shooting.x, shooting.y);
+        ctx.lineTo(shooting.x - shooting.vx * 10, shooting.y - shooting.vy * 10);
+        ctx.stroke();
+        if (shooting.life <= 0 || shooting.x > W + 60) shooting = null;
       }
     }
 
-    function animateParticles() {
-      ctx.clearRect(0, 0, width, height);
-      
-      for (let i = 0; i < particles.length; i++) {
-        particles[i].update();
-        particles[i].draw();
-        for (let j = i + 1; j < particles.length; j++) {
-          const dx = particles[i].x - particles[j].x;
-          const dy = particles[i].y - particles[j].y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < 120) {
-            ctx.strokeStyle = `rgba(54, 188, 247, ${0.12 * (1 - dist/120)})`;
+    function initStars() {
+      stars = [];
+      const n = Math.min(Math.floor((W * H) / 11000), 110);
+      for (let i = 0; i < n; i++) stars.push(new Star());
+    }
+    function loopStars() {
+      ctx.clearRect(0, 0, W, H);
+      for (let i = 0; i < stars.length; i++) { stars[i].step(); stars[i].draw(); }
+      // constellation lines
+      for (let i = 0; i < stars.length; i++) {
+        for (let j = i + 1; j < stars.length; j++) {
+          const dx = stars[i].x - stars[j].x, dy = stars[i].y - stars[j].y;
+          const dist = dx * dx + dy * dy;
+          if (dist < 12100) {
+            ctx.strokeStyle = 'rgba(138, 180, 255, ' + (0.08 * (1 - dist / 12100)) + ')';
             ctx.lineWidth = 1;
             ctx.beginPath();
-            ctx.moveTo(particles[i].x, particles[i].y);
-            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.moveTo(stars[i].x, stars[i].y);
+            ctx.lineTo(stars[j].x, stars[j].y);
             ctx.stroke();
           }
         }
       }
-      requestAnimationFrame(animateParticles);
+      maybeShoot();
+      requestAnimationFrame(loopStars);
     }
-    initParticles();
-    animateParticles();
+    initStars();
+    if (REDUCED) {
+      for (const s of stars) s.draw();
+    } else {
+      loopStars();
+    }
 
     /* =========================================================
-       TYPING EFFECT IN HERO SECTION
+       TYPING EFFECT
     ========================================================= */
     const typingTexts = [
-      "Nothing to see here... yet (or is there?)",
-      "Powered by friendship, caffeine & 100% procrastination.",
-      "Shipping great products since... TBD.",
-      "404: Introduction not found... but vibes are 200 OK!"
+      'Nothing to see here… yet (or is there?)',
+      'Powered by friendship, caffeine & 100% procrastination.',
+      'Shipping great products since… TBD.',
+      '404: Introduction not found — but vibes are 200 OK!',
+      'sudo make world_domination  # permission denied'
     ];
-
-    let textIdx = 0;
-    let charIdx = 0;
-    let isDeleting = false;
+    let tIdx = 0, cIdx = 0, deleting = false;
     const typingEl = document.getElementById('typing-text');
-
     function typeLoop() {
-      const fullText = typingTexts[textIdx % typingTexts.length];
-
-      if (isDeleting) {
-        typingEl.textContent = fullText.substring(0, charIdx - 1);
-        charIdx--;
-      } else {
-        typingEl.textContent = fullText.substring(0, charIdx + 1);
-        charIdx++;
-      }
-
-      let typeSpeed = isDeleting ? 35 : 70;
-
-      if (!isDeleting && charIdx === fullText.length) {
-        typeSpeed = 2200;
-        isDeleting = true;
-      } else if (isDeleting && charIdx === 0) {
-        isDeleting = false;
-        textIdx++;
-        typeSpeed = 400;
-      }
-
-      setTimeout(typeLoop, typeSpeed);
+      const full = typingTexts[tIdx % typingTexts.length];
+      typingEl.textContent = full.substring(0, deleting ? --cIdx : ++cIdx);
+      let delay = deleting ? 28 : 62;
+      if (!deleting && cIdx === full.length) { delay = 2400; deleting = true; }
+      else if (deleting && cIdx === 0) { deleting = false; tIdx++; delay = 420; }
+      setTimeout(typeLoop, delay);
     }
-    typeLoop();
+    if (REDUCED) { typingEl.textContent = typingTexts[0]; } else { typeLoop(); }
 
     /* =========================================================
-       INTERACTIVE TERMINAL SYSTEM
+       SCROLL: progress bar + reveal + counters + progress fills
+    ========================================================= */
+    const progressBar = document.getElementById('scroll-progress');
+    addEventListener('scroll', () => {
+      const h = document.documentElement;
+      const pct = h.scrollTop / (h.scrollHeight - h.clientHeight) * 100;
+      progressBar.style.width = pct + '%';
+    }, { passive: true });
+
+    function animateCount(el) {
+      const target = parseInt(el.dataset.count, 10);
+      if (!target) { el.textContent = el.dataset.count; return; }
+      const dur = 1400, t0 = performance.now();
+      function tick(t) {
+        const p = Math.min((t - t0) / dur, 1);
+        const eased = 1 - Math.pow(1 - p, 3);
+        el.textContent = Math.round(target * eased).toLocaleString();
+        if (p < 1) requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+    }
+
+    const io = new IntersectionObserver(entries => {
+      for (const en of entries) {
+        if (!en.isIntersecting) continue;
+        en.target.classList.add('in');
+        en.target.querySelectorAll('[data-count]').forEach(animateCount);
+        en.target.querySelectorAll('.progress-fill').forEach(f => {
+          f.style.width = f.dataset.width;
+        });
+        io.unobserve(en.target);
+      }
+    }, { threshold: 0.18 });
+    document.querySelectorAll('.reveal, .stats-grid').forEach(el => io.observe(el));
+
+    /* =========================================================
+       CARD SPOTLIGHT
+    ========================================================= */
+    document.querySelectorAll('.card').forEach(card => {
+      card.addEventListener('pointermove', e => {
+        const r = card.getBoundingClientRect();
+        card.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+        card.style.setProperty('--my', (e.clientY - r.top) + 'px');
+      });
+    });
+
+    /* =========================================================
+       TOAST
+    ========================================================= */
+    const toastEl = document.getElementById('toast');
+    let toastTimer;
+    function toast(msg, ms = 3200) {
+      toastEl.textContent = msg;
+      toastEl.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toastEl.classList.remove('show'), ms);
+    }
+
+    /* =========================================================
+       MATRIX RAIN (easter egg)
+    ========================================================= */
+    const mCanvas = document.getElementById('matrix');
+    const mCtx = mCanvas.getContext('2d');
+    let matrixTimer = null, matrixRAF = null;
+    function startMatrix(duration = 6000) {
+      mCanvas.width = innerWidth; mCanvas.height = innerHeight;
+      const fontSize = 16;
+      const cols = Math.floor(mCanvas.width / fontSize);
+      const drops = Array(cols).fill(1);
+      const glyphs = '點鋪書DIANPUSHU01アカサタナ<>/{};=+*';
+      mCanvas.classList.add('on');
+      function rain() {
+        mCtx.fillStyle = 'rgba(4, 6, 12, 0.1)';
+        mCtx.fillRect(0, 0, mCanvas.width, mCanvas.height);
+        mCtx.fillStyle = '#34d399';
+        mCtx.font = fontSize + 'px "Fira Code", monospace';
+        for (let i = 0; i < drops.length; i++) {
+          const ch = glyphs[Math.floor(Math.random() * glyphs.length)];
+          mCtx.fillText(ch, i * fontSize, drops[i] * fontSize);
+          if (drops[i] * fontSize > mCanvas.height && Math.random() > 0.975) drops[i] = 0;
+          drops[i]++;
+        }
+        matrixRAF = requestAnimationFrame(rain);
+      }
+      cancelAnimationFrame(matrixRAF);
+      rain();
+      clearTimeout(matrixTimer);
+      matrixTimer = setTimeout(() => {
+        mCanvas.classList.remove('on');
+        setTimeout(() => { cancelAnimationFrame(matrixRAF); mCtx.clearRect(0, 0, mCanvas.width, mCanvas.height); }, 600);
+      }, duration);
+    }
+
+    /* =========================================================
+       TERMINAL v2.0 — history, tab-complete, easter eggs
     ========================================================= */
     const terminalInput = document.getElementById('terminal-input');
     const terminalHistory = document.getElementById('terminal-history');
     const terminalBody = document.getElementById('terminal-body');
+    const cmdHistory = [];
+    let histIdx = -1;
 
-    function appendTerminalOutput(text, isCmd = false) {
+    const COMMANDS = ['help', 'whoami', 'ls', 'ls ./products', 'git log', 'status', 'roadmap',
+      'neofetch', 'sudo', 'matrix', 'hack', 'coffee', 'fortune', 'date', 'echo', 'ping', 'clear', 'exit'];
+
+    function appendOut(html, isCmd = false) {
       const div = document.createElement('div');
       if (isCmd) {
         div.className = 'cmd-line';
-        div.textContent = `guest@dianpushu:~$ ${text}`;
+        div.textContent = 'guest@dianpushu:~$ ' + html;
       } else {
         div.className = 'terminal-output';
-        div.innerHTML = text;
+        div.innerHTML = html;
       }
       terminalHistory.appendChild(div);
       terminalBody.scrollTop = terminalBody.scrollHeight;
+      return div;
+    }
+
+    const NEOFETCH =
+'<span class="t-cyan">  ██████╗ ██████╗ </span>   <span class="t-green">guest</span>@<span class="t-cyan">dianpushu</span>\n' +
+'<span class="t-cyan">  ██╔══██╗██╔══██╗</span>   ─────────────────────────────\n' +
+'<span class="t-cyan">  ██║  ██║██████╔╝</span>   <span class="t-violet">OS</span>        Procrastination OS 26.07 LTS\n' +
+'<span class="t-cyan">  ██║  ██║██╔═══╝ </span>   <span class="t-violet">Host</span>      GitHub Pages（免費仔方案）\n' +
+'<span class="t-cyan">  ██████╔╝██║     </span>   <span class="t-violet">Kernel</span>    vibes-6.6.6-lts\n' +
+'<span class="t-cyan">  ╚═════╝ ╚═╝     </span>   <span class="t-violet">Uptime</span>    自 2026 年起持續醞釀\n' +
+'                      <span class="t-violet">Shell</span>     dianpushu-cli v2.0\n' +
+'                      <span class="t-violet">Products</span>  0（但夢想很多）\n' +
+'                      <span class="t-violet">Memory</span>    99% 已用於儲存點子\n' +
+'                      <span class="t-violet">Battery</span>   咖啡因 ▓▓▓▓▓▓▓▓░░ 82%';
+
+    const FORTUNES = [
+      '「今天的你，比昨天更接近開始寫程式的那一天。」',
+      '「點子不會過期，只會增值。」 — Dianpushu 財務長（缺）',
+      '「先開 repo，剩下的交給未來的自己。」',
+      '「Deadline 是最好的靈感來源，可惜我們沒有 deadline。」',
+      '「你今天 git init 了嗎？」'
+    ];
+
+    let hacking = false;
+    function runHack() {
+      if (hacking) return;
+      hacking = true;
+      const steps = [
+        ['[  0%] 正在入侵主機防火牆…', 300],
+        ['[23%] 繞過管理員權限…', 700],
+        ['[47%] 下載機密產品藍圖…', 700],
+        ['[71%] 解密 /vault/master-plan.zip…', 800],
+        ['[95%] 解壓縮中…', 900],
+        ['<span class="t-red">[ERROR] 解壓縮完成：資料夾是空的。</span>', 600],
+        ['<span class="t-amber">主謀留言：「藍圖還在我們腦中，實體化功能將於 Soon™ 推出。」</span>', 500],
+        ['<span class="t-green">hack 結束。你已被反向追蹤（開玩笑的，我們不會寫追蹤程式）。</span>', 400]
+      ];
+      let delay = 0;
+      steps.forEach(([msg, wait]) => {
+        delay += wait;
+        setTimeout(() => {
+          appendOut(msg);
+          if (msg.includes('hack 結束')) hacking = false;
+        }, delay);
+      });
     }
 
     function runCommand(cmdStr) {
-      const raw = cmdStr.trim();
+      const raw = String(cmdStr).trim();
       const cmd = raw.toLowerCase();
-      appendTerminalOutput(raw, true);
+      if (raw) { cmdHistory.push(raw); histIdx = cmdHistory.length; }
+      appendOut(raw, true);
 
       if (cmd === 'help') {
-        appendTerminalOutput(`可用指令清單 (Dianpushu CLI v1.0):
-  <span class="text-cyan">whoami</span>          - 查詢我們是誰與組織宗旨
-  <span class="text-cyan">ls ./products</span>   - 檢查組織目前有哪些公開產品
-  <span class="text-cyan">git log</span>         - 查看組織最近的開發或裝潢紀錄
-  <span class="text-cyan">status</span>          - 顯示目前各項任務的真實進度表
-  <span class="text-cyan">roadmap</span>         - 顯示組織的 Roadmap 循環步驟
-  <span class="text-cyan">clear</span>           - 清空終端機畫面`);
+        appendOut('可用指令清單 <span class="t-dim">(dianpushu-cli v2.0)</span>:\n' +
+'  <span class="t-cyan">whoami</span>      我們是誰\n' +
+'  <span class="t-cyan">neofetch</span>    組織系統規格總覽\n' +
+'  <span class="t-cyan">status</span>      各項任務真實進度\n' +
+'  <span class="t-cyan">roadmap</span>     組織 Roadmap 循環\n' +
+'  <span class="t-cyan">ls ./products</span>  檢查公開產品\n' +
+'  <span class="t-cyan">git log</span>     最近的開發紀錄\n' +
+'  <span class="t-cyan">fortune</span>     今日組織運勢\n' +
+'  <span class="t-cyan">coffee</span>      續命\n' +
+'  <span class="t-cyan">clear</span>       清空畫面\n' +
+'  <span class="t-dim">…以及數個未列出的隱藏指令。</span>');
       } else if (cmd === 'whoami') {
-        appendTerminalOutput(`一群朋友。具體要幹嘛還在想。
-表面上看是在認真醞釀大招，實際上也是在認真醞釀大招。`);
-      } else if (cmd === 'ls ./products' || cmd === 'ls -l ./products' || cmd === 'ls products') {
-        appendTerminalOutput(`ls: cannot access './products': No such file or directory
-<span class="text-purple">提示：產品仍在醞釀階段，敬請期待未來發布！</span>`);
-      } else if (cmd === 'ls ./secrets' || cmd === 'cd private' || cmd === 'ls -a') {
-        appendTerminalOutput(`<span class="text-pink">[Access Denied] 隱私保護警告：內部機密與專案庫（Private Repo）僅限組織正式授權成員存取！</span>`);
-      } else if (cmd === 'git log' || cmd.startsWith('git log')) {
-        appendTerminalOutput(`<span class="text-cyan">ea85b1b</span> (HEAD -> main) feat: 打造組織公開互動首頁
-<span class="text-cyan">a1b2c3d</span> init: 先開個組織，氣勢絕不能輸`);
+        appendOut('一群朋友。具體要幹嘛還在想。\n表面上看是在認真醞釀大招，實際上也是在認真醞釀大招。');
+      } else if (cmd === 'neofetch') {
+        appendOut(NEOFETCH);
+      } else if (cmd === 'ls' || cmd === 'ls ./products' || cmd === 'ls -l ./products' || cmd === 'ls products') {
+        appendOut('ls: cannot access \'./products\': No such file or directory\n<span class="t-violet">提示：產品仍在醞釀階段，敬請期待未來發布！</span>');
+      } else if (cmd === 'ls ./secrets' || cmd === 'cd private' || cmd === 'ls -a' || cmd === 'ls -la') {
+        appendOut('<span class="t-pink">[Access Denied] 內部機密與 Private Repo 僅限組織正式成員存取！</span>\n<span class="t-dim">（好啦其實裡面也是空的）</span>');
+      } else if (cmd.startsWith('git log') || cmd === 'git log') {
+        appendOut('<span class="t-cyan">f3a92c1</span> (HEAD -> main) feat: 首頁大改造，質感全面升級\n<span class="t-cyan">ea85b1b</span> feat: 打造組織公開互動首頁\n<span class="t-cyan">a1b2c3d</span> init: 先開個組織，氣勢絕不能輸');
       } else if (cmd === 'status') {
-        appendTerminalOutput(`Dianpushu 開發進度報告：
-------------------------------------------------------------
-取組織名字     ▓▓▓▓▓▓▓▓▓▓ 100%   ← 吵了三天的傑作
-設計 Logo      ▓▓▓░░░░░░░  30%   ← 有人畫了一個圓
-寫程式碼       ░░░░░░░░░░   0%   ← 快了快了，馬上開始
-統治世界       ░░░░░░░░░░   0%   ← 已排入下季度 Backlog`);
+        appendOut('Dianpushu 開發進度報告：\n──────────────────────────────────────────\n取組織名字   <span class="t-cyan">▓▓▓▓▓▓▓▓▓▓</span> 100%  ← 吵了三天的傑作\n設計 Logo    <span class="t-violet">▓▓▓░░░░░░░</span>  30%  ← 有人畫了一個圓\n寫程式碼     <span class="t-pink">░░░░░░░░░░</span>   0%  ← 快了快了馬上開始\n統治世界     <span class="t-dim">░░░░░░░░░░</span>   0%  ← 已排入 backlog');
       } else if (cmd === 'roadmap') {
-        appendTerminalOutput(`Roadmap 循環步驟：
-1. 💡 有個超讚的點子
-2. 📦 開一個新 Repo (git init)
-3. 🎨 幫 Repo 取名字 (討論三天三夜)
-4. 😴 擱置三個月 (無限迴圈回到步驟 1)`);
+        appendOut('Roadmap 循環：\n 1. 💡 有個超讚的點子\n 2. 📦 開一個新 Repo (git init)\n 3. 🎨 幫 Repo 取名字（討論三天三夜）\n 4. 😴 擱置三個月 → <span class="t-amber">GOTO 1（無限迴圈）</span>');
+      } else if (cmd.startsWith('sudo')) {
+        appendOut('<span class="t-red">guest 不在 sudoers 檔案中。此事件將被記錄並回報。</span>\n<span class="t-dim">（嚇你的。我們連 log 系統都還沒寫。）</span>');
+      } else if (cmd === 'matrix') {
+        appendOut('<span class="t-green">Wake up, Neo… 正在載入母體…</span>');
+        startMatrix(6000);
+      } else if (cmd === 'hack' || cmd === 'hack --force') {
+        appendOut('<span class="t-green">啟動入侵程序 (純屬娛樂模式)…</span>');
+        runHack();
+      } else if (cmd === 'coffee' || cmd === 'make coffee') {
+        appendOut('    ( (\n     ) )\n  <span class="t-amber">........</span>\n  <span class="t-amber">|      |]</span>\n  <span class="t-amber">\\      /</span>\n   <span class="t-amber">`----\'</span>\n☕ 咖啡已上桌。生產力 +0%，心情 +100%。');
+      } else if (cmd === 'fortune') {
+        appendOut('<span class="t-amber">' + FORTUNES[Math.floor(Math.random() * FORTUNES.length)] + '</span>');
+      } else if (cmd === 'date') {
+        appendOut(new Date().toLocaleString('zh-TW', { hour12: false }) + '\n<span class="t-dim">（依然不是發布產品的日子）</span>');
+      } else if (cmd.startsWith('echo ')) {
+        const div = appendOut('');
+        div.textContent = raw.slice(5);
+      } else if (cmd === 'ping') {
+        appendOut('PING dianpushu.motivation (127.0.0.1): 56 data bytes\n<span class="t-red">Request timeout</span> — 動力伺服器暫時無回應，請稍後再試。');
+      } else if (cmd.startsWith('rm ')) {
+        appendOut('<span class="t-red">rm: 操作已拒絕。</span> 這裡本來就什麼都沒有，沒東西給你刪。');
+      } else if (cmd === 'exit' || cmd === 'logout') {
+        appendOut('離開？不存在的。你已經是組織的<span class="t-pink">榮譽路人</span>了。');
       } else if (cmd === 'clear' || cmd === 'cls') {
         terminalHistory.innerHTML = '';
       } else if (cmd === '') {
-        // do nothing
+        // no-op
       } else {
-        appendTerminalOutput(`找不到指令: '${raw}'。請嘗試輸入 <span class="text-cyan">help</span> 獲取可用指令。`);
+        appendOut('找不到指令: \'' + raw.replace(/</g, '&lt;') + '\'。輸入 <span class="t-cyan">help</span> 查看可用指令。');
       }
       terminalInput.value = '';
     }
+    window.runCommand = runCommand;
 
     terminalInput.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
         runCommand(terminalInput.value);
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        if (histIdx > 0) terminalInput.value = cmdHistory[--histIdx] || '';
+      } else if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        if (histIdx < cmdHistory.length - 1) {
+          terminalInput.value = cmdHistory[++histIdx];
+        } else { histIdx = cmdHistory.length; terminalInput.value = ''; }
+      } else if (e.key === 'Tab') {
+        e.preventDefault();
+        const cur = terminalInput.value.trim().toLowerCase();
+        if (!cur) return;
+        const match = COMMANDS.find(c => c.startsWith(cur));
+        if (match) terminalInput.value = match;
       }
+    });
+    terminalBody.addEventListener('click', (e) => {
+      if (window.getSelection().toString()) return;
+      terminalInput.focus({ preventScroll: true });
     });
 
     /* =========================================================
-       VISITOR COUNTER BOOSTER
+       VISITOR COUNTER (persists locally)
     ========================================================= */
-    let countVal = 1337;
     const countEl = document.getElementById('visitor-count');
     const badgeEl = document.getElementById('visitor-badge');
-
+    let countVal = parseInt(localStorage.getItem('dp-visits') || '1337', 10) + 1;
+    localStorage.setItem('dp-visits', countVal);
+    countEl.textContent = countVal.toLocaleString();
     badgeEl.addEventListener('click', () => {
       countVal++;
+      localStorage.setItem('dp-visits', countVal);
       countEl.textContent = countVal.toLocaleString();
       badgeEl.style.transform = 'scale(1.15)';
-      setTimeout(() => { badgeEl.style.transform = ''; }, 200);
+      setTimeout(() => { badgeEl.style.transform = ''; }, 180);
     });
 
-    /* Random Developer Quotes in Footer */
+    /* =========================================================
+       ROTATING QUOTES (with fade)
+    ========================================================= */
     const quotes = [
       '"First, solve the problem. Then, write the code." — John Johnson',
       '"Simplicity is the soul of efficiency." — Austin Freeman',
       '"Make it work, make it right, make it fast." — Kent Beck',
-      '"Code is like humor. When you have to explain it, it’s bad." — Cory House'
+      '"Code is like humor. When you have to explain it, it’s bad." — Cory House',
+      '"Talk is cheap. Show me the code." — Linus Torvalds（我們選擇性忽略這句）'
     ];
+    const quoteEl = document.getElementById('dev-quote');
     setInterval(() => {
-      const q = quotes[Math.floor(Math.random() * quotes.length)];
-      document.getElementById('dev-quote').textContent = q;
-    }, 8000);
+      quoteEl.classList.add('fading');
+      setTimeout(() => {
+        quoteEl.textContent = quotes[Math.floor(Math.random() * quotes.length)];
+        quoteEl.classList.remove('fading');
+      }, 500);
+    }, 9000);
+
+    /* =========================================================
+       KONAMI CODE EASTER EGG
+    ========================================================= */
+    const KONAMI = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
+    let kIdx = 0;
+    addEventListener('keydown', (e) => {
+      if (e.target === terminalInput) return;
+      kIdx = (e.key === KONAMI[kIdx]) ? kIdx + 1 : (e.key === KONAMI[0] ? 1 : 0);
+      if (kIdx === KONAMI.length) {
+        kIdx = 0;
+        startMatrix(8000);
+        toast('🎉 成就解鎖：連 Konami Code 都試了，看來你跟我們一樣閒。歡迎加入組織（精神上）。', 5000);
+      }
+    });
   </script>
 </body>
 </html>
