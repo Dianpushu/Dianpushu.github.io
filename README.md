@@ -33,11 +33,32 @@
    - 完美承襲組織「醞釀中 (Est. 2026 · Something is brewing)」幽默精神。
    - 所有內部專案與私人資訊（Private Repo 內容）嚴格隔離，保護組織隱私。
 
+8. **自訂 404 頁面**
+   - 走錯路也有終端機儀式感：打字機重演你輸入的錯誤路徑，附上「機率 100% 不存在」的系統分析報告。
+
+9. **品牌識別 & 社群分享預覽**
+   - 漸層「D_」SVG favicon（含 PNG fallback 與 apple-touch-icon）。
+   - Open Graph + Twitter Card meta 標籤與 1200×630 `og-image.png`，分享到 Discord / Facebook / LINE 會顯示精美 embed 卡片。
+
 ---
 
 ## 🛠️ 技術架構
 
-- **純靜態單檔 HTML5 + CSS3 + Vanilla JavaScript**：零建置流程、零框架依賴。
+- **純靜態 HTML5 + CSS3 + Vanilla JavaScript**：零建置流程、零框架依賴。
+- **關注點分離的檔案結構**：
+
+  ```text
+  ├── index.html          # 首頁（純結構 + meta）
+  ├── 404.html            # 自訂 404 頁面（GitHub Pages 自動套用）
+  └── assets/
+      ├── css/style.css   # 全站樣式
+      ├── js/main.js      # 首頁互動邏輯
+      ├── js/404.js       # 404 頁打字機效果
+      ├── favicon.svg     # 主 favicon（向量）
+      ├── favicon-96.png  # PNG fallback
+      ├── apple-touch-icon.png
+      └── og-image.png    # 社群分享預覽圖 (1200×630)
+  ```
 - **HTML5 Canvas ×2**：星空粒子背景與 Matrix 字雨彩蛋。
 - **IntersectionObserver**：滾動漸入與計數動畫。
 - **支援 `prefers-reduced-motion`**：對動畫敏感的訪客自動降級。
